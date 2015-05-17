@@ -1,18 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+using NUnit.Framework;
 
 namespace Durwella.UrlShortening.Tests
 {
-    [TestClass]
     public class UrlShortenerTest
     {
-        [TestMethod]
+        [Test]
         public void ShouldSaveAndReturnHash()
         {
             var mockHashScheme = new Mock<IHashScheme>();
@@ -28,5 +22,9 @@ namespace Durwella.UrlShortening.Tests
             shortened.Should().Be("http://goto/123abc");
             mockRepository.Verify(r => r.Add(hash, url));
         }
+
+        // TODO: Already been hashed
+        // TODO: Hash collision handling
+        // TODO: Redirection unwrapping (avoid multiple redirects and redirect loops)
     }
 }

@@ -6,6 +6,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Durwella.UrlShortening", "D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Durwella.UrlShortening.Tests", "Durwella.UrlShortening.Tests\Durwella.UrlShortening.Tests.csproj", "{ED25D9A0-4B32-4FD7-907B-6C50BFCB9F1C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{25C29AF2-B4BA-4695-B3F2-C8B0B9BD76AC}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
