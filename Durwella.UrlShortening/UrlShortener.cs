@@ -7,6 +7,7 @@ namespace Durwella.UrlShortening
         public IHashScheme HashScheme { get; private set; }
         public IAliasRepository Repository { get; private set; }
         public string BaseUrl { get; private set; }
+        public const int MaximumHashAttempts = 500;
 
         public UrlShortener()
             : this( new DefaultHashScheme(), new MemoryAliasRepository(), "http://example.com")
@@ -28,6 +29,13 @@ namespace Durwella.UrlShortening
             else
             {
                 key = HashScheme.GetKey(url);
+                int permutation = 0;
+                while (Repository.ContainsKey(key))
+                {
+                    if (permutation == MaximumHashAttempts)
+                        throw new Exception(String.Format("Failed to find a unique hash for url <{0}> after {1} attempts", url, permutation));
+                    key = HashScheme.GetKey(url, ++permutation);
+                }
                 Repository.Add(key, url);
             }
             var baseUri = new Uri(BaseUrl);

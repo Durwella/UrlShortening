@@ -7,5 +7,10 @@ namespace Durwella.UrlShortening
         {
             return value.GetHashCode().ToString();
         }
+
+        public string GetKey(string value, int permutation)
+        {
+            return (value.GetHashCode() + permutation).ToString();
+        }
     }
 }
