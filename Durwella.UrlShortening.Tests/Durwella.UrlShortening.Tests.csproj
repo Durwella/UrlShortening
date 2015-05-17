@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UrlShortenerTest.cs" />
+    <Compile Include="WebClientUrlUnwrapperTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Durwella.UrlShortening\Durwella.UrlShortening.csproj">
