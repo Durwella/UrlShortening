@@ -1,5 +1,7 @@
 # UrlShortening
 
+[![Build status](https://ci.appveyor.com/api/projects/status/bdr6q9t088l8c81c?svg=true)](https://ci.appveyor.com/project/jfoshee/urlshortening)
+
 This is a *work in progress* to implement a simple URL shortening service using .NET and Azure.
 
 ## References

@@ -22,8 +22,14 @@ namespace Durwella.UrlShortening
 
         public string Shorten(string url)
         {
-            var key = HashScheme.GetKey(url);
-            Repository.Add(key, url);
+            string key;
+            if (Repository.ContainsValue(url))
+                key = Repository.GetKey(url);
+            else
+            {
+                key = HashScheme.GetKey(url);
+                Repository.Add(key, url);
+            }
             var baseUri = new Uri(BaseUrl);
             var newUri = new Uri(baseUri, key);
             return newUri.ToString();

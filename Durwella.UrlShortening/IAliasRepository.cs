@@ -4,6 +4,8 @@
     {
         void Add(string key, string value);
         bool ContainsKey(string key);
+        bool ContainsValue(string value);
+        string GetKey(string value);
         string GetValue(string key);
     }
 }

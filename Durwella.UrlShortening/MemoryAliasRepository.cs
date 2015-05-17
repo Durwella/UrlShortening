@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Durwella.UrlShortening
 {
@@ -7,6 +8,11 @@ namespace Durwella.UrlShortening
         public string GetValue(string key)
         {
             return this[key];
+        }
+
+        public string GetKey(string value)
+        {
+            return this.Single(t => t.Value == value).Key;
         }
     }
 }
