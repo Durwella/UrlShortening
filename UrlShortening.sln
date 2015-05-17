@@ -1,9 +1,26 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Durwella.UrlShortening", "Durwella.UrlShortening\Durwella.UrlShortening.csproj", "{7627727E-22A4-4241-8735-55E929496FAE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Durwella.UrlShortening.Tests", "Durwella.UrlShortening.Tests\Durwella.UrlShortening.Tests.csproj", "{ED25D9A0-4B32-4FD7-907B-6C50BFCB9F1C}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7627727E-22A4-4241-8735-55E929496FAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7627727E-22A4-4241-8735-55E929496FAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7627727E-22A4-4241-8735-55E929496FAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7627727E-22A4-4241-8735-55E929496FAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED25D9A0-4B32-4FD7-907B-6C50BFCB9F1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED25D9A0-4B32-4FD7-907B-6C50BFCB9F1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED25D9A0-4B32-4FD7-907B-6C50BFCB9F1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED25D9A0-4B32-4FD7-907B-6C50BFCB9F1C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
