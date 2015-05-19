@@ -2,12 +2,14 @@
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
+using System.Linq;
 
 namespace Durwella.UrlShortening
 {
     public class AzureTableAliasRepository : IAliasRepository
     {
         public static readonly string Partition = "Global";
+
         public class Entity : TableEntity
         {
             public string Value { get; set; }
@@ -42,22 +44,30 @@ namespace Durwella.UrlShortening
 
         public bool ContainsKey(string key)
         {
-            throw new NotImplementedException();
+            var op = TableOperation.Retrieve(Partition, key);
+            var result = _table.Execute(op);
+            return result.Result != null;
         }
 
         public bool ContainsValue(string value)
         {
-            throw new NotImplementedException();
+            var query = new TableQuery<Entity>().Where(TableQuery.GenerateFilterCondition("Value", QueryComparisons.Equal, value));
+            return _table.ExecuteQuery(query).Any();
         }
 
         public string GetKey(string value)
         {
-            throw new NotImplementedException();
+            var query = new TableQuery<Entity>().Where(TableQuery.GenerateFilterCondition("Value", QueryComparisons.Equal, value));
+            var entity = _table.ExecuteQuery(query).Single();
+            return entity.RowKey;
         }
 
         public string GetValue(string key)
         {
-            throw new NotImplementedException();
+            var op = TableOperation.Retrieve<Entity>(Partition, key);
+            var result = _table.Execute(op);
+            var entity = (Entity)result.Result;
+            return entity.Value;
         }
 
         private CloudTable _table;

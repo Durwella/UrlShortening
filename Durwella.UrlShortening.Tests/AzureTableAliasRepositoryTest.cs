@@ -42,6 +42,19 @@ namespace Durwella.UrlShortening.Tests
             var account = new CloudStorageAccount(credentials, useHttps: true);
             var tableClient = account.CreateCloudTableClient();
             _table = tableClient.GetTableReference(_tablePrefix);
+            // Delete all the test entries from the test table
+            // Deleting the table itself is too slow because it cannot be immediately recreated
+            for (int i = 0; i < 10; i++)
+            {
+                var key = "TheTestKey" + i.ToString();
+                var retrieveOp = TableOperation.Retrieve(AzureTableAliasRepository.Partition, key);
+                var result = _table.Execute(retrieveOp);
+                if (result.Result != null)
+                {
+                    var deleteOp = TableOperation.Delete(result.Result as ITableEntity);
+                    _table.Execute(deleteOp);
+                }
+            }
         }
 
         [SetUp]
@@ -61,8 +74,8 @@ namespace Durwella.UrlShortening.Tests
         [Test]
         public void ShouldAddKeyValueEntity()
         {
-            var key = "TheTestKey";
-            var value = "TheTestValue";
+            var key = "TheTestKey0";
+            var value = "TheTestValue0";
 
             subject.Add(key, value);
 
@@ -75,6 +88,50 @@ namespace Durwella.UrlShortening.Tests
             properties["Value"].StringValue.Should().Be(value);
         }
 
+        [Test]
+        public void ShouldReportContainsKeyAfterAdding()
+        {
+            var key = "TheTestKey1";
+            var value = "TheTestValue1";
+            subject.ContainsKey(key).Should().BeFalse();
 
+            subject.Add(key, value);
+
+            subject.ContainsKey(key).Should().BeTrue();
+        }
+
+        [Test]
+        public void ShouldReportContainsValueAfterAdding()
+        {
+            var key = "TheTestKey2";
+            var value = "TheTestValue2";
+            subject.ContainsValue(value).Should().BeFalse();
+
+            subject.Add(key, value);
+
+            subject.ContainsValue(value).Should().BeTrue();
+        }
+
+        [Test]
+        public void ShouldRetrieveValueAfterAdding()
+        {
+            var key = "TheTestKey3";
+            var value = "TheTestValue3";
+
+            subject.Add(key, value);
+
+            subject.GetValue(key).Should().Be(value);
+        }
+
+        [Test]
+        public void ShouldRetrieveKeyAfterAdding()
+        {
+            var key = "TheTestKey4";
+            var value = "TheTestValue4";
+
+            subject.Add(key, value);
+
+            subject.GetKey(value).Should().Be(key);
+        }
     }
 }
