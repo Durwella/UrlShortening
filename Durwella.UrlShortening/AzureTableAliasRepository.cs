@@ -1,23 +1,43 @@
 ﻿using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
+using Microsoft.WindowsAzure.Storage.Table;
 using System;
 
 namespace Durwella.UrlShortening
 {
     public class AzureTableAliasRepository : IAliasRepository
     {
+        public static readonly string Partition = "Global";
+        public class Entity : TableEntity
+        {
+            public string Value { get; set; }
+
+            public Entity()
+            {
+            }
+
+            public Entity(string key, string value)
+            {
+                PartitionKey = Partition;
+                RowKey = key;
+                Value = value;
+            }
+        }
+
         public AzureTableAliasRepository(string azureStorageAccountName, string azureStorageAccessKey, string tablePrefix)
         {
             var credentials = new StorageCredentials(azureStorageAccountName, azureStorageAccessKey);
             var account = new CloudStorageAccount(credentials, useHttps: true);
             var tableClient = account.CreateCloudTableClient();
-            var table = tableClient.GetTableReference(tablePrefix);
-            table.CreateIfNotExists();
+            _table = tableClient.GetTableReference(tablePrefix);
+            _table.CreateIfNotExists();
         }
 
         public void Add(string key, string value)
         {
-            throw new NotImplementedException();
+            var entity = new Entity(key, value);
+            var insertOperation = TableOperation.InsertOrReplace(entity);
+            _table.Execute(insertOperation);
         }
 
         public bool ContainsKey(string key)
@@ -39,5 +59,7 @@ namespace Durwella.UrlShortening
         {
             throw new NotImplementedException();
         }
+
+        private CloudTable _table;
     }
 }
