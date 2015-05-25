@@ -16,5 +16,10 @@ namespace Durwella.UrlShortening.Web.ServiceInterface
             var shortened = UrlShortener.Shorten(shortUrlRequest.Url);
             return new ShortUrlResponse(shortened);
         }
+
+        public ShortUrlResponse Get(ShortUrlRequest shortUrlRequest)
+        {
+            return Post(shortUrlRequest);
+        }
     }
 }

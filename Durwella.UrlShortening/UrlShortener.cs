@@ -11,7 +11,12 @@ namespace Durwella.UrlShortening
         public const int MaximumHashAttempts = 500;
 
         public UrlShortener()
-            : this("http://example.com", new MemoryAliasRepository(), new DefaultHashScheme(), new WebClientUrlUnwrapper())
+            : this("http://example.com")
+        {
+        }
+
+        public UrlShortener(string baseUrl)
+            : this(baseUrl, new MemoryAliasRepository(), new DefaultHashScheme(), new WebClientUrlUnwrapper())
         {
         }
 

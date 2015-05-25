@@ -2,7 +2,7 @@
 
 namespace Durwella.UrlShortening.Web.ServiceModel
 {
-    [Route("/shorten/{Url}")]
+    [Route("/shorten")]
     public class ShortUrlRequest
     {
         public string Url { get; set; }
