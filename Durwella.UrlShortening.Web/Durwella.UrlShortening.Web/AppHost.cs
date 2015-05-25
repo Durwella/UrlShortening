@@ -17,7 +17,7 @@ namespace Durwella.UrlShortening.Web
         /// Base constructor requires a name and assembly to locate web service classes. 
         /// </summary>
         public AppHost()
-            : base("Durwella.UrlShortening.Web", typeof(MyServices).Assembly)
+            : base("Durwella.UrlShortening.Web", typeof(HelloService).Assembly)
         {
 
         }

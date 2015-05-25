@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Durwella.UrlShortening.Web.Tests</RootNamespace>
     <AssemblyName>Durwella.UrlShortening.Web.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -16,6 +16,7 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,7 +36,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework">
+    <Reference Include="FluentAssertions">
+      <HintPath>..\..\packages\FluentAssertions.3.3.0\lib\net45\FluentAssertions.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentAssertions.Core">
+      <HintPath>..\..\packages\FluentAssertions.3.3.0\lib\net45\FluentAssertions.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack">
@@ -55,15 +63,21 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Net" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UnitTests.cs" />
+    <Compile Include="AppHostServiceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Durwella.UrlShortening\Durwella.UrlShortening.csproj">
+      <Project>{7627727e-22a4-4241-8735-55e929496fae}</Project>
+      <Name>Durwella.UrlShortening</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Durwella.UrlShortening.Web.ServiceInterface\Durwella.UrlShortening.Web.ServiceInterface.csproj">
       <Project>{582dfb0f-f84d-4e43-9bca-2a5a86600b7a}</Project>
       <Name>Durwella.UrlShortening.Web.ServiceInterface</Name>

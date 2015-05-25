@@ -7,7 +7,7 @@ using Durwella.UrlShortening.Web.ServiceModel;
 
 namespace Durwella.UrlShortening.Web.ServiceInterface
 {
-    public class MyServices : Service
+    public class HelloService : Service
     {
         public object Any(Hello request)
         {
