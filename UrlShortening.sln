@@ -12,6 +12,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Durwella.UrlShortening.Web", "Durwella.UrlShortening.Web\Durwella.UrlShortening.Web\Durwella.UrlShortening.Web.csproj", "{53024FE0-18F4-445D-9A64-8B4C14C9E97C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Durwella.UrlShortening.Web.ServiceModel", "Durwella.UrlShortening.Web\Durwella.UrlShortening.Web.ServiceModel\Durwella.UrlShortening.Web.ServiceModel.csproj", "{08BEF328-AB7D-48D3-800D-48ACC75C7914}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Durwella.UrlShortening.Web.ServiceInterface", "Durwella.UrlShortening.Web\Durwella.UrlShortening.Web.ServiceInterface\Durwella.UrlShortening.Web.ServiceInterface.csproj", "{582DFB0F-F84D-4E43-9BCA-2A5A86600B7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Durwella.UrlShortening.Web.Tests", "Durwella.UrlShortening.Web\Durwella.UrlShortening.Web.Tests\Durwella.UrlShortening.Web.Tests.csproj", "{B1665387-EF91-4CA0-82BB-66E5781ED800}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +34,22 @@ Global
 		{ED25D9A0-4B32-4FD7-907B-6C50BFCB9F1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED25D9A0-4B32-4FD7-907B-6C50BFCB9F1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED25D9A0-4B32-4FD7-907B-6C50BFCB9F1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53024FE0-18F4-445D-9A64-8B4C14C9E97C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53024FE0-18F4-445D-9A64-8B4C14C9E97C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53024FE0-18F4-445D-9A64-8B4C14C9E97C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53024FE0-18F4-445D-9A64-8B4C14C9E97C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08BEF328-AB7D-48D3-800D-48ACC75C7914}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08BEF328-AB7D-48D3-800D-48ACC75C7914}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08BEF328-AB7D-48D3-800D-48ACC75C7914}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08BEF328-AB7D-48D3-800D-48ACC75C7914}.Release|Any CPU.Build.0 = Release|Any CPU
+		{582DFB0F-F84D-4E43-9BCA-2A5A86600B7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{582DFB0F-F84D-4E43-9BCA-2A5A86600B7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{582DFB0F-F84D-4E43-9BCA-2A5A86600B7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{582DFB0F-F84D-4E43-9BCA-2A5A86600B7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1665387-EF91-4CA0-82BB-66E5781ED800}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1665387-EF91-4CA0-82BB-66E5781ED800}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1665387-EF91-4CA0-82BB-66E5781ED800}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1665387-EF91-4CA0-82BB-66E5781ED800}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
