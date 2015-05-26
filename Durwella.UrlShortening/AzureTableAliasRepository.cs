@@ -8,7 +8,8 @@ namespace Durwella.UrlShortening
 {
     public class AzureTableAliasRepository : IAliasRepository
     {
-        public static readonly string Partition = "Global";
+        public const string Partition = "Global";
+        public const string DefaultTablePrefix = "UrlShortening";
 
         public class Entity : TableEntity
         {
@@ -26,10 +27,32 @@ namespace Durwella.UrlShortening
             }
         }
 
-        public AzureTableAliasRepository(string azureStorageAccountName, string azureStorageAccessKey, string tablePrefix)
+        /// <summary>
+        /// The default repository uses the Development Storage Emulator which must be running. 
+        /// See: http://azure.microsoft.com/en-us/documentation/articles/storage-use-emulator/
+        /// </summary>
+        public AzureTableAliasRepository()
+            : this(CloudStorageAccount.DevelopmentStorageAccount, DefaultTablePrefix)
         {
-            var credentials = new StorageCredentials(azureStorageAccountName, azureStorageAccessKey);
-            var account = new CloudStorageAccount(credentials, useHttps: true);
+        }
+
+        public AzureTableAliasRepository(string azureStorageAccountName, string azureStorageAccessKey, string tablePrefix = DefaultTablePrefix)
+            : this(new StorageCredentials(azureStorageAccountName, azureStorageAccessKey), tablePrefix)
+        {
+        }
+
+        public AzureTableAliasRepository(StorageCredentials credentials, string tablePrefix = DefaultTablePrefix)
+            : this(new CloudStorageAccount(credentials, useHttps: true), tablePrefix)
+        {
+        }
+
+        public AzureTableAliasRepository(string connectionString, string tablePrefix = DefaultTablePrefix)
+            : this(CloudStorageAccount.Parse(connectionString), tablePrefix)
+        {
+        }
+
+        public AzureTableAliasRepository(CloudStorageAccount account, string tablePrefix)
+        {
             var tableClient = account.CreateCloudTableClient();
             _table = tableClient.GetTableReference(tablePrefix);
             _table.CreateIfNotExists();
