@@ -25,6 +25,7 @@ namespace Durwella.UrlShortening.Web
         public override void Configure(Container container)
         {
             container.Register<IResolver>(container);
+            container.Register<IAliasRepository>(new MemoryAliasRepository());
             //Plugins:
             //this.Plugins.Add(new PostmanFeature());
             //this.Plugins.Add(new CorsFeature());

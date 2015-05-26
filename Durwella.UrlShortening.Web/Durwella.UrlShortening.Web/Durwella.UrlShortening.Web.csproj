@@ -111,7 +111,7 @@
     <Content Include="scripts\jquery-1.9.0.js" />
     <Content Include="scripts\jquery-1.9.0.min.js" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="default.cshtml" />
+    <Content Include="hello.cshtml" />
     <Content Include="Views\Hello.cshtml" />
     <Content Include="scripts\angular.min.js.map" />
     <Content Include="scripts\jquery-1.9.0.min.map" />
@@ -134,6 +134,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Durwella.UrlShortening\Durwella.UrlShortening.csproj">
+      <Project>{7627727e-22a4-4241-8735-55e929496fae}</Project>
+      <Name>Durwella.UrlShortening</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Durwella.UrlShortening.Web.ServiceInterface\Durwella.UrlShortening.Web.ServiceInterface.csproj">
       <Project>{582dfb0f-f84d-4e43-9bca-2a5a86600b7a}</Project>
       <Name>Durwella.UrlShortening.Web.ServiceInterface</Name>

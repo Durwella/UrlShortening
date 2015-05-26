@@ -14,6 +14,5 @@ namespace Durwella.UrlShortening.Tests
             Console.WriteLine(scheme.GetKey("goo"));
             Console.WriteLine(scheme.GetKey("http://faslokdfjasf.asdfj.asdf.sa.fs.df.asdfa.vvdhh.aeh/efiab/esbaseieia/vea"));
         }
-
     }
 }
