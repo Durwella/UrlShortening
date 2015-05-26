@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Web;
+﻿using Durwella.UrlShortening.Web.ServiceInterface;
 using Funq;
-using Durwella.UrlShortening.Web.ServiceInterface;
-using ServiceStack.Razor;
 using ServiceStack;
+using ServiceStack.Configuration;
+using ServiceStack.Razor;
 
 namespace Durwella.UrlShortening.Web
 {
@@ -19,7 +15,6 @@ namespace Durwella.UrlShortening.Web
         public AppHost()
             : base("Durwella.UrlShortening.Web", typeof(HelloService).Assembly)
         {
-
         }
 
         /// <summary>
@@ -29,10 +24,10 @@ namespace Durwella.UrlShortening.Web
         /// <param name="container"></param>
         public override void Configure(Container container)
         {
-            //Config examples
+            container.Register<IResolver>(container);
+            //Plugins:
             //this.Plugins.Add(new PostmanFeature());
             //this.Plugins.Add(new CorsFeature());
-
             this.Plugins.Add(new RazorFormat());
         }
     }

@@ -1,10 +1,11 @@
-﻿using Durwella.UrlShortening;
-using Durwella.UrlShortening.Web.ServiceInterface;
+﻿using Durwella.UrlShortening.Web.ServiceInterface;
 using Durwella.UrlShortening.Web.ServiceModel;
 using FluentAssertions;
 using NUnit.Framework;
 using ServiceStack;
+using ServiceStack.Configuration;
 using ServiceStack.Testing;
+using ServiceStack.Web;
 using System;
 
 namespace Durwella.UrlShortening.Web.Tests
@@ -33,6 +34,7 @@ namespace Durwella.UrlShortening.Web.Tests
             {
                 ConfigureContainer = container =>
                 {
+                    container.Register<IResolver>(container);
                     container.RegisterAs<FakeAliasRepository, IAliasRepository>();
                     container.RegisterAs<FakeHashScheme, IHashScheme>();
                     container.RegisterAs<FakeUrlUnwrapper, IUrlUnwrapper>();
@@ -60,10 +62,16 @@ namespace Durwella.UrlShortening.Web.Tests
             Assert.That(response.Result, Is.EqualTo("Hello, World!"));
         }
 
+        class MockRequest : MockHttpRequest, IRequest
+        {
+            string IRequest.AbsoluteUri { get { return "http://a.b.c/shorten?Url=http%3A%2F%2Fex.ample%2fone"; } }
+        }
+
         [Test]
         public void PostShouldCreateNewShortUrl()
         {
             var service = appHost.Container.Resolve<UrlShorteningService>();
+            service.Request = new MockRequest(); // For the Absolute Uri
             var givenUrl = "http://ex.ampl/one";
 
             var response = (ShortUrlResponse)service.Post(new ShortUrlRequest { Url = givenUrl });
