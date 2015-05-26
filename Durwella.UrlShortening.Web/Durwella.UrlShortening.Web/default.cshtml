@@ -1,0 +1,35 @@
+﻿@inherits ViewPage
+@{
+    ViewBag.Title = "Durwella's URL Shortening Service";
+}
+<script>
+    var app = angular.module('urlShortenerApp', []);
+
+    app.controller('urlShortenerCtrl', ['$scope', '$http',
+        function ($scope, $http) {
+            $scope.submitLongUrl = function() {
+                if ($scope.longUrl) {
+                    $scope.shortenedUrl = null;
+                    $http.post('/shorten?Url=' + encodeURIComponent($scope.longUrl))
+                        .success(function (response) {
+                            $scope.shortenedUrl = response.Shortened;
+                        });
+                }
+            }
+        }
+    ]);
+</script>
+
+<div ng-app="urlShortenerApp">
+    <div ng-controller="urlShortenerCtrl">
+        <div>
+            <form ng-submit="submitLongUrl()">
+                <input class="form-control input-lg" ng-model="longUrl" id="LongUrl" type="url" placeholder="Type your longUrl">
+                <input class="btn-primary" type="submit" name="go" value="Shorten!" />
+            </form>
+            <p style="margin-top: 15px;font-size: large" ng-show="shortenedUrl">
+                <a href="{{shortenedUrl}}" ng-bind="shortenedUrl" target="_blank"></a>
+            </p>
+        </div>
+    </div>
+</div>

@@ -26,13 +26,10 @@ namespace Durwella.UrlShortening.Web.ServiceInterface
             return new ShortUrlResponse(shortened);
         }
 
-        public ShortUrlResponse Get(ShortUrlRequest shortUrlRequest)
-        {
-            return Post(shortUrlRequest);
-        }
-
         public object Get(FollowShortUrlRequest request)
         {
+            if (!AliasRepository.ContainsKey(request.Key))
+                return new HttpResult { StatusCode = HttpStatusCode.NotFound };
             var destination = AliasRepository.GetValue(request.Key);
             return new HttpResult { StatusCode = HttpStatusCode.Redirect, Headers = { { HttpHeaders.Location, destination } } };
         }
