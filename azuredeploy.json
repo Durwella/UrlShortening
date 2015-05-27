@@ -2,10 +2,71 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "hostingPlanName": {
+            "type": "string"
+        },
+        "hostingPlanLocation": {
+            "type": "string"
+        },
+        "hostingPlanSKU": {
+            "type": "string",
+            "allowedValues": [
+                "Free",
+                "Shared",
+                "Basic",
+                "Standard"
+            ],
+            "defaultValue": "Free"
+        },
+        "hostingPlanWorkerSize": {
+            "type": "string",
+            "allowedValues": [
+                "0",
+                "1",
+                "2"
+            ],
+            "defaultValue": "0"
+        },
+        "siteName": {
+            "type": "string"
+        }
     },
     "variables": {
     },
     "resources": [
+        {
+            "name": "[parameters('hostingPlanName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[parameters('hostingPlanLocation')]",
+            "apiVersion": "2014-06-01",
+            "dependsOn": [ ],
+            "tags": {
+                "displayName": "hostingPlan"
+            },
+            "properties": {
+                "name": "[parameters('hostingPlanName')]",
+                "sku": "[parameters('hostingPlanSKU')]",
+                "workerSize": "[parameters('hostingPlanWorkerSize')]",
+                "numberOfWorkers": 1
+            }
+        },
+        {
+            "name": "[parameters('siteName')]",
+            "type": "Microsoft.Web/sites",
+            "location": "[parameters('hostingPlanLocation')]",
+            "apiVersion": "2014-06-01",
+            "dependsOn": [
+                "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
+            ],
+            "tags": {
+                "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "Resource",
+                "displayName": "site"
+            },
+            "properties": {
+                "name": "[parameters('siteName')]",
+                "serverFarm": "[parameters('hostingPlanName')]"
+            }
+        }        
     ],
     "outputs": {
     }
