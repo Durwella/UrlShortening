@@ -8,7 +8,7 @@
         "siteLocation": {
             "type": "string"
         },
-        "hostingPlanSKU": {
+        "sku": {
             "type": "string",
             "allowedValues": [
                 "Free",
@@ -18,7 +18,7 @@
             ],
             "defaultValue": "Free"
         },
-        "hostingPlanWorkerSize": {
+        "workerSize": {
             "type": "string",
             "allowedValues": [
                 "0",
@@ -45,8 +45,8 @@
             },
             "properties": {
                 "name": "[parameters('hostingPlanName')]",
-                "sku": "[parameters('hostingPlanSKU')]",
-                "workerSize": "[parameters('hostingPlanWorkerSize')]",
+                "sku": "[parameters('sku')]",
+                "workerSize": "[parameters('workerSize')]",
                 "numberOfWorkers": 1
             }
         },
