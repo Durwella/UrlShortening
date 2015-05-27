@@ -25,3 +25,13 @@ In that case short URLs will break when the web app is restarted.
 [URL Shortening: Hashes In Practice](http://blog.codinghorror.com/url-shortening-hashes-in-practice/)  
 Nice article by Jeff Atwood. Historical yet relevant.
 
+[Using Custom Azure Resource Management Templates](https://elliotthamai.wordpress.com/2014/11/15/using-custom-arm-templates-with-the-deploy-to-azure-button/)
+Helpful for understanding what is going on with the azuredeploy.json file
+
+Testing azure deployment can be done something like this...
+
+	$site = "uniqueNameARMTest123"
+	New-AzureResourceGroup -TemplateFile .\azuredeploy.json -Name $site -DeploymentName $site `
+		-Verbose -Location "South Central US" -hostingPlanName $site -siteLocation "South Central US" `
+		-siteName $site -repoUrl "https://github.com/Durwella/UrlShortening" -branch "master"
+
