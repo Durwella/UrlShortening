@@ -29,6 +29,12 @@
         },
         "siteName": {
             "type": "string"
+        },
+        "repoUrl": {
+            "type": "string"
+        },
+        "branch": {
+            "type": "string"
         }
     },
     "variables": {
@@ -65,8 +71,24 @@
             "properties": {
                 "name": "[parameters('siteName')]",
                 "serverFarm": "[parameters('hostingPlanName')]"
-            }
-        }        
+            },
+            "resources": [
+                {
+                    "apiVersion": "2014-06-01",
+                    "name": "web",
+                    "type": "sourcecontrols",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]",
+                        "[concat('Microsoft.Web/Sites/', parameters('siteName'), '/config/web')]"
+                    ],
+                    "properties": {
+                        "RepoUrl": "[parameters('repoUrl')]",
+                        "branch": "[parameters('branch')]",
+                        "IsManualIntegration": true
+                    }
+                }
+            ]
+        }
     ],
     "outputs": {
     }
