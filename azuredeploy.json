@@ -38,6 +38,10 @@
         },
         "azureStorageConnectionString": {
             "type": "string"
+        },
+        "title": {
+            "type": "string",
+            "defaultValue": "URL Shortening Service"
         }
     },
     "variables": {
@@ -101,7 +105,13 @@
                             {
                                 "ConnectionString": "[parameters('azureStorageConnectionString')]",
                                 "Name": "AzureStorage",
-                                "Type":  3
+                                "Type": 3
+                            }
+                        ],
+                        "appSettings": [
+                            {
+                                "name": "Title",
+                                "value": "[parameters('title')]"
                             }
                         ]
                     }

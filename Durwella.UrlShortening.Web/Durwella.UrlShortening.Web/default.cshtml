@@ -1,7 +1,6 @@
 ﻿@inherits ViewPage
 @{
-    ViewBag.Title = "Durwella's URL Shortening Service";
-    ViewBag.Brand = "Shorten!";
+    ViewBag.Title = System.Configuration.ConfigurationManager.AppSettings["Title"];
 }
 <script>
     var app = angular.module('urlShortenerApp', []);
@@ -11,9 +10,17 @@
             $scope.submitLongUrl = function() {
                 if ($scope.longUrl) {
                     $scope.shortenedUrl = null;
+                    $scope.errorMessage = null;
+                    $scope.waiting = true;
                     $http.post('/shorten?Url=' + encodeURIComponent($scope.longUrl))
                         .success(function (response) {
                             $scope.shortenedUrl = response.Shortened;
+                            $scope.waiting = false;
+                        })
+                        .error(function (response) {
+                            console.log('Error: ', response);
+                            $scope.errorMessage = response.ResponseStatus.Message;
+                            $scope.waiting = false;
                         });
                 }
             }
@@ -24,13 +31,19 @@
 <div ng-app="urlShortenerApp">
     <div ng-controller="urlShortenerCtrl">
         <div>
-            <form ng-submit="submitLongUrl()">
-                <input class="form-control input-lg" ng-model="longUrl" id="LongUrl" type="url" placeholder="Type your long URL">
-                <input class="btn-primary" type="submit" name="go" value="Shorten!" />
+            <form ng-submit="submitLongUrl()" name="shortenForm">
+                <input class="form-control input-lg" ng-model="longUrl" id="LongUrl" type="url" placeholder="Paste your long URL">
+                <input class="btn btn-primary" style="margin-top: 5px"
+                       ng-disabled="waiting" 
+                       type="submit" name="go" value="Shorten!" />
             </form>
-            <p style="margin-top: 15px;font-size: large" ng-show="shortenedUrl">
+            <div style="margin-top: 15px"></div>
+            <div class="container danger alert-danger" ng-show="errorMessage">
+                <h4>{{errorMessage}}</h4>
+            </div>
+            <h3 ng-show="shortenedUrl">
                 <a href="{{shortenedUrl}}" ng-bind="shortenedUrl" target="_blank"></a>
-            </p>
+            </h3>
         </div>
     </div>
 </div>
