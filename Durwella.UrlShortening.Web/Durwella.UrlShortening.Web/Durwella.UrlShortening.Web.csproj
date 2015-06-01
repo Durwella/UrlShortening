@@ -68,6 +68,9 @@
     <Reference Include="ServiceStack">
       <HintPath>..\..\packages\ServiceStack.4.0.40\lib\net40\ServiceStack.dll</HintPath>
     </Reference>
+    <Reference Include="ServiceStack.Api.Swagger">
+      <HintPath>..\..\packages\ServiceStack.Api.Swagger.4.0.40\lib\net40\ServiceStack.Api.Swagger.dll</HintPath>
+    </Reference>
     <Reference Include="ServiceStack.Client">
       <HintPath>..\..\packages\ServiceStack.Client.4.0.40\lib\net40\ServiceStack.Client.dll</HintPath>
     </Reference>

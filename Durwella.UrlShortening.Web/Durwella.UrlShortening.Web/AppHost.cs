@@ -1,6 +1,7 @@
 ﻿using Durwella.UrlShortening.Web.ServiceInterface;
 using Funq;
 using ServiceStack;
+using ServiceStack.Api.Swagger;
 using ServiceStack.Configuration;
 using ServiceStack.Logging;
 using ServiceStack.Razor;
@@ -42,7 +43,8 @@ namespace Durwella.UrlShortening.Web
             container.Register<IAliasRepository>(aliasRepository);
 
             //Plugins:
-            this.Plugins.Add(new RazorFormat());
+            Plugins.Add(new RazorFormat());
+            Plugins.Add(new SwaggerFeature());
             //this.Plugins.Add(new PostmanFeature());
             //this.Plugins.Add(new CorsFeature());
         }
