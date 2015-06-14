@@ -19,7 +19,10 @@
                         })
                         .error(function (response) {
                             console.log('Error: ', response);
-                            $scope.errorMessage = response.ResponseStatus.Message;
+                            var message = "Unknown Error";
+                            if (response.hasOwnProperty('ResponseStatus') && response.ResponseStatus.hasOwnProperty('Message'))
+                                message = response.ResponseStatus.Message;
+                            $scope.errorMessage = message;
                             $scope.waiting = false;
                         });
                 }

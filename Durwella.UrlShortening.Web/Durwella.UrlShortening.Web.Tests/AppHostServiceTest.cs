@@ -26,11 +26,11 @@ namespace Durwella.UrlShortening.Web.Tests
             }
         }
 
-        private readonly ServiceStackHost appHost;
+        private readonly ServiceStackHost _appHost;
 
         public AppHostServiceTest()
         {
-            appHost = new BasicAppHost(typeof(HelloService).Assembly)
+            _appHost = new BasicAppHost(typeof(HelloService).Assembly)
             {
                 ConfigureContainer = container =>
                 {
@@ -49,13 +49,13 @@ namespace Durwella.UrlShortening.Web.Tests
         [TestFixtureTearDown]
         public void TestFixtureTearDown()
         {
-            appHost.Dispose();
+            _appHost.Dispose();
         }
 
         [Test]
         public void HelloServiceAsCanary()
         {
-            var service = appHost.Container.Resolve<HelloService>();
+            var service = _appHost.Container.Resolve<HelloService>();
 
             var response = (HelloResponse)service.Any(new Hello { Name = "World" });
 
@@ -70,7 +70,7 @@ namespace Durwella.UrlShortening.Web.Tests
         [Test]
         public void PostShouldCreateNewShortUrl()
         {
-            var service = appHost.Container.Resolve<UrlShorteningService>();
+            var service = _appHost.Container.Resolve<UrlShorteningService>();
             service.Request = new MockRequest(); // For the Absolute Uri
             var givenUrl = "http://ex.ampl/one";
 

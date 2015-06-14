@@ -42,6 +42,13 @@
         "title": {
             "type": "string",
             "defaultValue": "URL Shortening Service"
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The provided password will be required to create new short URLs. Blank means no authentication required."
+            }
         }
     },
     "variables": {
@@ -112,6 +119,10 @@
                             {
                                 "name": "Title",
                                 "value": "[parameters('title')]"
+                            },
+                            {
+                                "name": "AdminPassword",
+                                "value": "[parameters('adminPassword')]"
                             }
                         ]
                     }

@@ -15,6 +15,7 @@ namespace Durwella.UrlShortening.Web.ServiceInterface
         // Can't have a persistent UrlShortener with current architecture because can't get absolute uri until have a request
         //public UrlShortener UrlShortener { get; set; }
 
+        [Authenticate]
         public ShortUrlResponse Post(ShortUrlRequest shortUrlRequest)
         {
             var hashScheme = Resolver.TryResolve<IHashScheme>() ?? new DefaultHashScheme();
