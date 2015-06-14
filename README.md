@@ -2,9 +2,9 @@
 
 A simple URL shortening service using .NET and Azure.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/bdr6q9t088l8c81c?svg=true)](https://ci.appveyor.com/project/jfoshee/urlshortening)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/Durwella/UrlShortening/master/LICENSE)
 [![Deploy to Azure](https://img.shields.io/badge/deploy!-Azure-6EC0D9.svg)](https://azuredeploy.net/)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/Durwella/UrlShortening/master/LICENSE)
+[![Build status](https://ci.appveyor.com/api/projects/status/bdr6q9t088l8c81c?svg=true)](https://ci.appveyor.com/project/jfoshee/urlshortening)
 
 ## Deployment
 
@@ -29,6 +29,17 @@ There are interfaces you can use to customize the specific mechanics:
 - [IHashScheme](Durwella.UrlShortening/IHashScheme.cs) - Used to generate the short URL. Should generate an appropriate short "hash" from a long string. A *poor* [default](Durwella.UrlShortening/DefaultHashScheme.cs) imlpementation is provided which generates 6 character strings from [String.GetHashCode](https://msdn.microsoft.com/en-us/library/system.string.gethashcode). Should also provide a way to iteratetively generate new hashes from the same input in the case of a hash collision.
 - [IAliasRepository](Durwella.UrlShortening/IAliasRepository.cs) - Dictionary-like persistence of "alias" or "hash" of one string (the key) to another (the value). Used to save mapping between short and long URLs. The [default](Durwella.UrlShortening/AzureTableAliasRepository.cs) uses Azure Table storage. The [fallback](Durwella.UrlShortening/MemoryAliasRepository.cs) uses an in-memory Dictionary.
 - [IUrlUnwrapper](Durwella.UrlShortening/IUrlUnwrapper.cs) - Responsible for resolving a direct URL to a resource. For example the provided URL might already be a 'short URL', which could lead to multiple redirects or a redirect loop. The [default](Durwella.UrlShortening/WebClientUrlUnwrapper.cs) uses [WebClient](https://msdn.microsoft.com/en-us/library/system.net.webclient).
+
+## Contributing
+
+- Natural enhancements to this project would be: 
+	- Other persistence options implementing [IAliasRepository](Durwella.UrlShortening/IAliasRepository.cs)
+	- Other hashing schemes implementing [IHashScheme](Durwella.UrlShortening/IHashScheme.cs)
+- Core logic in the Durwella.UrlShortening project must be unit tested.
+- Unit tests should be written using 3 paragaphs corresponding to [Arrange, Act and Assert](http://c2.com/cgi/wiki?ArrangeActAssert)
+- Build must remain clean (no warnings, tests passing)
+- Code Analysis issues should not be introduced
+- Must be deployable to Azure using [AzureDeploy.net](https://azuredeploy.net/)
 
 ## References
 
