@@ -51,8 +51,11 @@ Helpful for understanding what is going on with the [azuredeploy.json](azuredepl
 
 Testing Azure deployment can be done from Azure PowerShell something like this...
 
-	$site = "uniqueNameARMTest123"
-	New-AzureResourceGroup -TemplateFile .\azuredeploy.json -Name $site -DeploymentName $site `
-		-Verbose -Location "South Central US" -hostingPlanName $site -siteLocation "South Central US" `
-		-siteName $site -repoUrl "https://github.com/Durwella/UrlShortening" -branch "master"
+    Switch-AzureMode -Name AzureResourceManager
+    $site = "uniqueNameARMTest123"
+    $pw = read-host -AsSecureString
+    New-AzureResourceGroup -TemplateFile .\azuredeploy.json -Name $site -DeploymentName $site `
+        -Verbose -Location "South Central US" -hostingPlanName $site -hostingPlanLocation "South Central US" `
+        -siteName $site -repoUrl "https://github.com/Durwella/UrlShortening" -branch "master" `
+        -title $site -adminPassword $pw
 

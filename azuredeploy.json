@@ -37,7 +37,8 @@
             "type": "string"
         },
         "azureStorageConnectionString": {
-            "type": "string"
+            "type": "string",
+            "defaultValue": ""
         },
         "title": {
             "type": "string",
@@ -101,6 +102,18 @@
                     }
                 },
                 {
+                    "apiVersion": "2014-11-01",
+                    "name": "appsettings",
+                    "type": "config",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
+                    ],
+                    "properties": {
+                        "Title": "[parameters('title')]",
+                        "AdminPassword":"[parameters('adminPassword')]",
+                    }
+                },
+                {
                     "apiVersion": "2014-04-01",
                     "name": "web",
                     "type": "config",
@@ -113,16 +126,6 @@
                                 "ConnectionString": "[parameters('azureStorageConnectionString')]",
                                 "Name": "AzureStorage",
                                 "Type": 3
-                            }
-                        ],
-                        "appSettings": [
-                            {
-                                "name": "Title",
-                                "value": "[parameters('title')]"
-                            },
-                            {
-                                "name": "AdminPassword",
-                                "value": "[parameters('adminPassword')]"
                             }
                         ]
                     }
