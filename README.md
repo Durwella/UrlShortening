@@ -58,4 +58,6 @@ Testing Azure deployment can be done from Azure PowerShell something like this..
         -Verbose -Location "South Central US" -hostingPlanName $site -hostingPlanLocation "South Central US" `
         -siteName $site -repoUrl "https://github.com/Durwella/UrlShortening" -branch "master" `
         -title $site -adminPassword $pw
+    # Testing...
+    Remove-AzureResourceGroup -Name $site
 
