@@ -102,7 +102,7 @@
                     }
                 },
                 {
-                    "apiVersion": "2014-11-01",
+                    "apiVersion": "2015-04-01",
                     "name": "appsettings",
                     "type": "config",
                     "dependsOn": [
@@ -110,24 +110,18 @@
                     ],
                     "properties": {
                         "Title": "[parameters('title')]",
-                        "AdminPassword":"[parameters('adminPassword')]",
+                        "AdminPassword": "[parameters('adminPassword')]",
                     }
                 },
                 {
-                    "apiVersion": "2014-04-01",
-                    "name": "web",
+                    "apiVersion": "2015-04-01",
+                    "name": "connectionstrings",
                     "type": "config",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', parameters('siteName'))]"
                     ],
                     "properties": {
-                        "connectionStrings": [
-                            {
-                                "ConnectionString": "[parameters('azureStorageConnectionString')]",
-                                "Name": "AzureStorage",
-                                "Type": 3
-                            }
-                        ]
+                        "AzureStorage": { "value":  "[parameters('azureStorageConnectionString')]", "type":  3 }
                     }
                 }
             ]
