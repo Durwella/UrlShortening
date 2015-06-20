@@ -137,8 +137,6 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="scripts\angular-route.min.js.map" />
     <Content Include="default.cshtml" />
-    <None Include="Properties\PublishProfiles\urlshortening1 %282%29.pubxml" />
-    <None Include="Properties\PublishProfiles\urlshortening2.pubxml" />
     <None Include="scripts\jquery-1.9.0.intellisense.js" />
     <Content Include="scripts\bootstrap.js" />
     <Content Include="scripts\bootstrap.min.js" />
