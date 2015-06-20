@@ -65,6 +65,11 @@ namespace Durwella.UrlShortening
             _table.Execute(insertOperation);
         }
 
+        public bool Remove(string key)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool ContainsKey(string key)
         {
             var op = TableOperation.Retrieve(Partition, key);

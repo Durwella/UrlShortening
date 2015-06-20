@@ -39,6 +39,19 @@ namespace Durwella.UrlShortening
             return ShortenDirect(directUrl);
         }
 
+        public string ShortenWithCustomHash(string url, string customHash)
+        {
+            if (Repository.ContainsKey(customHash))
+                throw new ArgumentException("The given custom short URL is already in use.");
+            var oldKey = Repository.GetKey(url);
+            Repository.Remove(oldKey);
+            var key = customHash;
+            Repository.Add(key, url);
+            var baseUri = new Uri(BaseUrl);
+            var newUri = new Uri(baseUri, key);
+            return newUri.ToString();
+        }
+
         private string ShortenDirect(string url)
         {
             string key;

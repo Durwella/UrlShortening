@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 
@@ -7,6 +8,7 @@ namespace Durwella.UrlShortening.Tests
     public class UrlShortenerTest
     {
         UrlShortener _subject;
+        private const string BaseUrl = "http://goto";
         private Mock<IUrlUnwrapper> _mockUnwrapper;
         private Mock<IHashScheme> _mockHashScheme;
         private Mock<IAliasRepository> _mockRepository;
@@ -14,12 +16,11 @@ namespace Durwella.UrlShortening.Tests
         [SetUp]
         public void SetupSubject()
         {
-            var baseUrl = "http://goto";
             _mockHashScheme = new Mock<IHashScheme>();
             _mockRepository = new Mock<IAliasRepository>();
             _mockUnwrapper = new Mock<IUrlUnwrapper>();
             _mockUnwrapper.Setup(u => u.GetDirectUrl(It.IsAny<string>())).Returns<string>(s => s);
-            _subject = new UrlShortener(baseUrl, _mockRepository.Object, _mockHashScheme.Object, _mockUnwrapper.Object);
+            _subject = new UrlShortener(BaseUrl, _mockRepository.Object, _mockHashScheme.Object, _mockUnwrapper.Object);
         }
 
         [Test]
@@ -86,5 +87,52 @@ namespace Durwella.UrlShortening.Tests
             shortened.Should().Be("http://goto/foo");
             _mockRepository.Verify(r => r.Add(hash, url));
         }
+
+        [Test]
+        public void CanShortenWithCustomUrl()
+        {
+            _subject = new UrlShortener(BaseUrl, new MemoryAliasRepository(), _mockHashScheme.Object, _mockUnwrapper.Object);
+            var url = "http://example.com/1/2/3";
+            var hash = "asdf";
+            _mockHashScheme.Setup(h => h.GetKey(url)).Returns(hash);
+            _subject.Shorten(url);
+            var customHash = "123";
+
+            string customShortened = _subject.ShortenWithCustomHash(url, customHash);
+
+            _subject.Repository.ContainsKey(hash).Should().BeFalse();
+            _subject.Repository.GetValue(customHash).Should().Be(url);
+            customShortened.Should().Be("http://goto/123");
+        }
+
+        [Test]
+        public void ShouldThrowIfCustomAlreadyInUse()
+        {
+            _subject = new UrlShortener(BaseUrl, new MemoryAliasRepository(), _mockHashScheme.Object, _mockUnwrapper.Object);
+            var url = "http://example.com/1/2/3";
+            var hash = "asdf";
+            _mockHashScheme.Setup(h => h.GetKey(url)).Returns(hash);
+            _subject.Shorten(url);
+            var customHash = "123";
+            _subject.Repository.Add(customHash, "existing");
+            var thrown = false;
+
+            try
+            {
+                _subject.ShortenWithCustomHash(url, customHash);
+            }
+            catch (ArgumentException exception)
+            {
+                exception.Message.Should().Contain("already").And.Contain("use");
+                thrown = true;
+            }
+
+            thrown.Should().BeTrue("Should throw exception for existing key");
+            _subject.Repository.GetValue(customHash).Should().Be("existing");
+            _subject.Repository.GetValue(hash).Should().Be(url);
+        }
+
+        // TODO: Use unwrapped URL when setting custom hash
+        // TODO: Make sure deleted hash points at destination url (collision)
     }
 }
