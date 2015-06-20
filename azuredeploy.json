@@ -50,6 +50,13 @@
             "metadata": {
                 "description": "The provided password will be required to create new short URLs. Blank means no authentication required."
             }
+        },
+        "preferredHashLength": {
+            "type": "int",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The number of characters for the key in the short URL. Four characters could encode about 16 million values in a base64 scheme."
+            }
         }
     },
     "variables": {
@@ -111,6 +118,7 @@
                     "properties": {
                         "Title": "[parameters('title')]",
                         "AdminPassword": "[parameters('adminPassword')]",
+                        "PreferredHashLength": "[parameters('preferredHashLength')]"
                     }
                 },
                 {

@@ -43,7 +43,7 @@ namespace Durwella.UrlShortening.Web
             {
                 var connectionStringSetting = ConfigurationManager.ConnectionStrings["AzureStorage"];
                 if (connectionStringSetting != null &&
-                    !string.IsNullOrWhiteSpace(connectionStringSetting.ConnectionString))
+                    !String.IsNullOrWhiteSpace(connectionStringSetting.ConnectionString))
                     aliasRepository = new AzureTableAliasRepository(connectionStringSetting.ConnectionString);
             }
             catch (Exception exception)
@@ -52,7 +52,22 @@ namespace Durwella.UrlShortening.Web
                 Trace.TraceError("Failed to connect to Azure Storage for persistent short URLs. Exception: {0}",
                     exception);
             }
-
+            var preferredHashLengthString = ConfigurationManager.AppSettings["PreferredHashLength"];
+            if (!String.IsNullOrWhiteSpace(preferredHashLengthString))
+            {
+                try
+                {
+                    var preferredHashLength = Int32.Parse(preferredHashLengthString);
+                    if (preferredHashLength < 0)
+                        throw new FormatException("Expected PreferredHashLength to be positive.");
+                    container.Register<IHashScheme>(new DefaultHashScheme {LengthPreference = preferredHashLength});
+                }
+                catch (FormatException exception)
+                {
+                    Trace.TraceError("Failed to parse PreferredHashLength. Exception: {0}",
+                        exception);
+                }
+            }
             container.Register<IResolver>(container);
             container.Register(aliasRepository);
         }
@@ -62,7 +77,7 @@ namespace Durwella.UrlShortening.Web
             // We use the [Authenticate] attribute to control access to creation of short URLs.
             // Therefore we have to set up an IAuthProvider even if the administrator doesn't want authentication.
             var adminPassword = ConfigurationManager.AppSettings["AdminPassword"];
-            var requirePassword = !string.IsNullOrWhiteSpace(adminPassword);
+            var requirePassword = !String.IsNullOrWhiteSpace(adminPassword);
             var authProviders = requirePassword
                 ? new IAuthProvider[]
                 {

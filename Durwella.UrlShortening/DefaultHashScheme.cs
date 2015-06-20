@@ -4,6 +4,13 @@ namespace Durwella.UrlShortening
 {
     public class DefaultHashScheme : IHashScheme
     {
+        public int LengthPreference { get; set; }
+
+        public DefaultHashScheme()
+        {
+            LengthPreference = 6;
+        }
+
         public string GetKey(string value)
         {
             var code = value.GetHashCode();
@@ -18,10 +25,11 @@ namespace Durwella.UrlShortening
         private string GetString(int code)
         {
             var bytes = BitConverter.GetBytes(code);
-            return Convert.ToBase64String(bytes)
+            var key = Convert.ToBase64String(bytes)
                 .Replace("=", "")
                 .Replace("+", "-")
                 .Replace("/", "_");
+            return key.Substring(0, LengthPreference);
         }
     }
 }

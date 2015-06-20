@@ -15,6 +15,7 @@ namespace Durwella.UrlShortening.Web.Tests
         class FakeAliasRepository : MemoryAliasRepository { }
         class FakeHashScheme : IHashScheme
         {
+            public int LengthPreference { get; set; }
             public string GetKey(string value) { return "123"; }
             public string GetKey(string value, int permutation) { throw new NotImplementedException(); }
         }
