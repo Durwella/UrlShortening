@@ -67,7 +67,10 @@ namespace Durwella.UrlShortening
 
         public bool Remove(string key)
         {
-            throw new NotImplementedException();
+            var entity = new Entity(key, null) {ETag = "*"};
+            var removeOperation = TableOperation.Delete(entity);
+            _table.Execute(removeOperation);
+            return true;
         }
 
         public bool ContainsKey(string key)

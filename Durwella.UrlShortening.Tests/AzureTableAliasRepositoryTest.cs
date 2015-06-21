@@ -133,5 +133,19 @@ namespace Durwella.UrlShortening.Tests
 
             subject.GetKey(value).Should().Be(key);
         }
+
+        [Test]
+        public void ShouldRemoveByKey()
+        {
+            var key = "TheTestKey5";
+            var value = "TheTestValue5";
+            subject.Add(key, value);
+            subject.ContainsKey(key).Should().BeTrue();
+
+            var didRemove = subject.Remove(key);
+
+            subject.ContainsKey(key).Should().BeFalse();
+            didRemove.Should().BeTrue();
+        }
     }
 }

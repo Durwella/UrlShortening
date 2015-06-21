@@ -7,7 +7,7 @@ namespace Durwella.UrlShortening.Tests
 {
     public class UrlShortenerTest
     {
-        UrlShortener _subject;
+        private UrlShortener _subject;
         private const string BaseUrl = "http://goto";
         private Mock<IUrlUnwrapper> _mockUnwrapper;
         private Mock<IHashScheme> _mockHashScheme;
@@ -132,7 +132,18 @@ namespace Durwella.UrlShortening.Tests
             _subject.Repository.GetValue(hash).Should().Be(url);
         }
 
-        // TODO: Use unwrapped URL when setting custom hash
-        // TODO: Make sure deleted hash points at destination url (collision)
+        [Test]
+        public void UseUnwrappedUrlForSettingCustomHash()
+        {
+            var givenUrl = "http://t.co/123";
+            var url = "http://example.com/abc";
+            var hash = "custom";
+            _mockUnwrapper.Setup(u => u.GetDirectUrl(givenUrl)).Returns(url);
+
+            var shortened = _subject.ShortenWithCustomHash(givenUrl, hash);
+
+            shortened.Should().Be("http://goto/custom");
+            _mockRepository.Verify(r => r.Add(hash, url));
+        }
     }
 }
