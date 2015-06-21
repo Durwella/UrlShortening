@@ -41,6 +41,8 @@ namespace Durwella.UrlShortening
 
         public string ShortenWithCustomHash(string url, string customHash)
         {
+            if (String.IsNullOrWhiteSpace(customHash))
+                throw new ArgumentException("The custom short URL cannot be empty.");
             var directUrl = UrlUnwrapper.GetDirectUrl(url);
             if (Repository.ContainsKey(customHash))
                 throw new ArgumentException("The given custom short URL is already in use.");

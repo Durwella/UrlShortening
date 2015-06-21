@@ -12,7 +12,9 @@
                     $scope.shortenedUrl = null;
                     $scope.errorMessage = null;
                     $scope.waiting = true;
-                    $http.post('/shorten?Url=' + encodeURIComponent($scope.longUrl))
+                    var action = angular.isString($scope.customPath) && $scope.customPath.length > 0 ?
+                        '/shorten-custom' : '/shorten';
+                    $http.post(action, { Url: $scope.longUrl, CustomPath: $scope.customPath })
                         .success(function (response) {
                             $scope.shortenedUrl = response.Shortened;
                             $scope.waiting = false;
@@ -36,6 +38,7 @@
         <div>
             <form ng-submit="submitLongUrl()" name="shortenForm">
                 <input class="form-control input-lg" ng-model="longUrl" id="LongUrl" type="url" placeholder="Paste your long URL">
+                <input class="form-control input-sm" ng-model="customPath" id="CustomPath" type="text" placeholder="Type a custom short path (optional)" style="margin-top: 5px">
                 <input class="btn btn-primary" style="margin-top: 5px"
                        ng-disabled="waiting" 
                        type="submit" name="go" value="Shorten!" />

@@ -16,7 +16,7 @@ namespace Durwella.UrlShortening.Web
     {
         /// Base constructor requires a name and assembly to locate web service classes.
         public AppHost()
-            : base("Durwella.UrlShortening.Web", typeof (HelloService).Assembly)
+            : base("Durwella.UrlShortening.Web", typeof (UrlShorteningService).Assembly)
         {
         }
 
@@ -38,13 +38,25 @@ namespace Durwella.UrlShortening.Web
 
         private static void SetupUrlShortening(Container container)
         {
-            IAliasRepository aliasRepository = new MemoryAliasRepository();
+            container.Register<IResolver>(container);
+            var aliasRepository = SetupAzureStorageAliasRepository() ?? new MemoryAliasRepository();
+            container.Register(aliasRepository);
+            SetupPreferredHashLength(container);
+        }
+
+        private static IAliasRepository SetupAzureStorageAliasRepository()
+        {
+            IAliasRepository aliasRepository = null;
             try
             {
                 var connectionStringSetting = ConfigurationManager.ConnectionStrings["AzureStorage"];
                 if (connectionStringSetting != null &&
                     !String.IsNullOrWhiteSpace(connectionStringSetting.ConnectionString))
-                    aliasRepository = new AzureTableAliasRepository(connectionStringSetting.ConnectionString);
+                {
+                    var azureStorageRepo = new AzureTableAliasRepository(connectionStringSetting.ConnectionString);
+                    aliasRepository = azureStorageRepo;
+                    SetupLockUrlMinutes(azureStorageRepo);
+                }
             }
             catch (Exception exception)
             {
@@ -52,6 +64,25 @@ namespace Durwella.UrlShortening.Web
                 Trace.TraceError("Failed to connect to Azure Storage for persistent short URLs. Exception: {0}",
                     exception);
             }
+            return aliasRepository;
+        }
+
+        private static void SetupLockUrlMinutes(AzureTableAliasRepository azureStorageRepo)
+        {
+            try
+            {
+                var lockUrlMinutes = ConfigUtils.GetAppSetting<int>("LockUrlMinutes",
+                    (int) azureStorageRepo.LockAge.TotalMinutes);
+                azureStorageRepo.LockAge = TimeSpan.FromMinutes(lockUrlMinutes);
+            }
+            catch (FormatException exception)
+            {
+                Trace.TraceError("Failed to parse LockUrlMinutes. Exception: {0}", exception);
+            }
+        }
+
+        private static void SetupPreferredHashLength(Container container)
+        {
             var preferredHashLengthString = ConfigurationManager.AppSettings["PreferredHashLength"];
             if (!String.IsNullOrWhiteSpace(preferredHashLengthString))
             {
@@ -60,7 +91,7 @@ namespace Durwella.UrlShortening.Web
                     var preferredHashLength = Int32.Parse(preferredHashLengthString);
                     if (preferredHashLength < 0)
                         throw new FormatException("Expected PreferredHashLength to be positive.");
-                    container.Register<IHashScheme>(new DefaultHashScheme {LengthPreference = preferredHashLength});
+                    container.Register<IHashScheme>(new DefaultHashScheme { LengthPreference = preferredHashLength });
                 }
                 catch (FormatException exception)
                 {
@@ -68,8 +99,6 @@ namespace Durwella.UrlShortening.Web
                         exception);
                 }
             }
-            container.Register<IResolver>(container);
-            container.Register(aliasRepository);
         }
 
         private void SetupAuthentication(Container container)

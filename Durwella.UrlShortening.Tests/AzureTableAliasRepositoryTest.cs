@@ -5,15 +5,16 @@ using Microsoft.WindowsAzure.Storage.Table;
 using NUnit.Framework;
 using System;
 using System.IO;
+using System.Threading;
 
-/// The tests here run against a live Azure Storage account.
-/// So, to run them you need to populate AzureTestCredentials.txt with two lines:
-/// Line 1: Your Azure Storage Account Name
-/// Line 2: Your Azure Storage Access Key
-/// It is strongly recommended you avoid committing your credentials 
-/// by invoking the following command from this project's directory:
-///     git update-index --assume-unchanged AzureTestCredentials.txt
-/// 
+// The tests here run against a live Azure Storage account.
+// So, to run them you need to populate AzureTestCredentials.txt with two lines:
+// Line 1: Your Azure Storage Account Name
+// Line 2: Your Azure Storage Access Key
+// It is strongly recommended you avoid committing your credentials 
+// by invoking the following command from this project's directory:
+//     git update-index --assume-unchanged AzureTestCredentials.txt
+// 
 
 namespace Durwella.UrlShortening.Tests
 {
@@ -25,7 +26,7 @@ namespace Durwella.UrlShortening.Tests
         private static bool _enabled = false;
         private static readonly string _tablePrefix = "UrlShorteningTest";
         private static CloudTable _table;
-        private AzureTableAliasRepository subject;
+        private AzureTableAliasRepository _subject;
 
         [TestFixtureSetUp]
         public static void LoadAzureCredentials()
@@ -62,7 +63,7 @@ namespace Durwella.UrlShortening.Tests
         {
             if (!_enabled) 
                 Assert.Ignore("Populate AzureTestCredentials.txt for this test");
-            subject = new AzureTableAliasRepository(_azureStorageAccountName, _azureStorageAccessKey, _tablePrefix);
+            _subject = new AzureTableAliasRepository(_azureStorageAccountName, _azureStorageAccessKey, _tablePrefix);
         }
 
         [Test]
@@ -77,7 +78,7 @@ namespace Durwella.UrlShortening.Tests
             var key = "TheTestKey0";
             var value = "TheTestValue0";
 
-            subject.Add(key, value);
+            _subject.Add(key, value);
 
             var retrieveOp = TableOperation.Retrieve(AzureTableAliasRepository.Partition, key);
             var result = _table.Execute(retrieveOp);
@@ -93,11 +94,11 @@ namespace Durwella.UrlShortening.Tests
         {
             var key = "TheTestKey1";
             var value = "TheTestValue1";
-            subject.ContainsKey(key).Should().BeFalse();
+            _subject.ContainsKey(key).Should().BeFalse();
 
-            subject.Add(key, value);
+            _subject.Add(key, value);
 
-            subject.ContainsKey(key).Should().BeTrue();
+            _subject.ContainsKey(key).Should().BeTrue();
         }
 
         [Test]
@@ -105,11 +106,11 @@ namespace Durwella.UrlShortening.Tests
         {
             var key = "TheTestKey2";
             var value = "TheTestValue2";
-            subject.ContainsValue(value).Should().BeFalse();
+            _subject.ContainsValue(value).Should().BeFalse();
 
-            subject.Add(key, value);
+            _subject.Add(key, value);
 
-            subject.ContainsValue(value).Should().BeTrue();
+            _subject.ContainsValue(value).Should().BeTrue();
         }
 
         [Test]
@@ -118,9 +119,9 @@ namespace Durwella.UrlShortening.Tests
             var key = "TheTestKey3";
             var value = "TheTestValue3";
 
-            subject.Add(key, value);
+            _subject.Add(key, value);
 
-            subject.GetValue(key).Should().Be(value);
+            _subject.GetValue(key).Should().Be(value);
         }
 
         [Test]
@@ -129,9 +130,9 @@ namespace Durwella.UrlShortening.Tests
             var key = "TheTestKey4";
             var value = "TheTestValue4";
 
-            subject.Add(key, value);
+            _subject.Add(key, value);
 
-            subject.GetKey(value).Should().Be(key);
+            _subject.GetKey(value).Should().Be(key);
         }
 
         [Test]
@@ -139,12 +140,12 @@ namespace Durwella.UrlShortening.Tests
         {
             var key = "TheTestKey5";
             var value = "TheTestValue5";
-            subject.Add(key, value);
-            subject.ContainsKey(key).Should().BeTrue();
+            _subject.Add(key, value);
+            _subject.ContainsKey(key).Should().BeTrue();
 
-            var didRemove = subject.Remove(key);
+            var didRemove = _subject.Remove(key);
 
-            subject.ContainsKey(key).Should().BeFalse();
+            _subject.ContainsKey(key).Should().BeFalse();
             didRemove.Should().BeTrue();
         }
 
@@ -152,11 +153,34 @@ namespace Durwella.UrlShortening.Tests
         public void ShouldReturnFalseIfKeyNotPresentForRemoval()
         {
             var key = "TheTestKey6";
-            subject.ContainsKey(key).Should().BeFalse();
+            _subject.ContainsKey(key).Should().BeFalse();
 
-            var didRemove = subject.Remove(key);
+            var didRemove = _subject.Remove(key);
 
             didRemove.Should().BeFalse();
+        }
+
+        [Test]
+        public void ShouldPreventRemovalAfterLockTimeSpan()
+        {
+            _subject.LockAge = TimeSpan.FromSeconds(2);
+            var key1 = "TheTestKey7";
+            _subject.Add(key1, "value");
+            var key2 = "TheTestKey8";
+            _subject.Add(key2, "value8");
+            _subject.Remove(key2).Should().BeTrue("Can remove key that is young enough");
+            Thread.Sleep(3000);
+
+            try
+            {
+                _subject.Remove(key1);
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
+            Assert.Fail("Should throw when trying to remove key that is too old");
         }
     }
 }
