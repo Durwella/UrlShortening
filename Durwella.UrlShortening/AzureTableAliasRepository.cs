@@ -67,7 +67,9 @@ namespace Durwella.UrlShortening
 
         public bool Remove(string key)
         {
-            var entity = new Entity(key, null) {ETag = "*"};
+            var entity = RetrieveEntity(key);
+            if (entity == null)
+                return false;
             var removeOperation = TableOperation.Delete(entity);
             _table.Execute(removeOperation);
             return true;
@@ -75,9 +77,8 @@ namespace Durwella.UrlShortening
 
         public bool ContainsKey(string key)
         {
-            var op = TableOperation.Retrieve(Partition, key);
-            var result = _table.Execute(op);
-            return result.Result != null;
+            var entity = RetrieveEntity(key);
+            return entity != null;
         }
 
         public bool ContainsValue(string value)
@@ -95,10 +96,16 @@ namespace Durwella.UrlShortening
 
         public string GetValue(string key)
         {
+            var entity = RetrieveEntity(key);
+            return entity.Value;
+        }
+
+        private Entity RetrieveEntity(string key)
+        {
             var op = TableOperation.Retrieve<Entity>(Partition, key);
             var result = _table.Execute(op);
-            var entity = (Entity)result.Result;
-            return entity.Value;
+            var entity = (Entity) result.Result;
+            return entity;
         }
 
         private CloudTable _table;

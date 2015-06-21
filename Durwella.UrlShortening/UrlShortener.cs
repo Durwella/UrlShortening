@@ -44,8 +44,11 @@ namespace Durwella.UrlShortening
             var directUrl = UrlUnwrapper.GetDirectUrl(url);
             if (Repository.ContainsKey(customHash))
                 throw new ArgumentException("The given custom short URL is already in use.");
-            var oldKey = Repository.GetKey(directUrl);
-            Repository.Remove(oldKey);
+            if (Repository.ContainsValue(directUrl))
+            {
+                var oldKey = Repository.GetKey(directUrl);
+                Repository.Remove(oldKey);
+            }
             Repository.Add(customHash, directUrl);
             return CompleteUrl(customHash);
         }

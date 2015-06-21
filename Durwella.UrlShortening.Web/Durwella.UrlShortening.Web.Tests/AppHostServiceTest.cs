@@ -31,7 +31,7 @@ namespace Durwella.UrlShortening.Web.Tests
 
         public AppHostServiceTest()
         {
-            _appHost = new BasicAppHost(typeof(HelloService).Assembly)
+            _appHost = new BasicAppHost(typeof(UrlShorteningService).Assembly)
             {
                 ConfigureContainer = container =>
                 {
@@ -41,7 +41,6 @@ namespace Durwella.UrlShortening.Web.Tests
                     container.RegisterAs<FakeUrlUnwrapper, IUrlUnwrapper>();
                     container.Register(new UrlShortener("http://a.b.c", container.Resolve<IAliasRepository>(), container.Resolve<IHashScheme>(), container.Resolve<IUrlUnwrapper>()));
                     // TODO: Base url via owin?
-                    // TODO: What we really care about when live are getting the Azure Storage credentials and other params
                 }
             }
             .Init();
@@ -75,10 +74,21 @@ namespace Durwella.UrlShortening.Web.Tests
             service.Request = new MockRequest(); // For the Absolute Uri
             var givenUrl = "http://ex.ampl/one";
 
-            var response = (ShortUrlResponse)service.Post(new ShortUrlRequest { Url = givenUrl });
+            var response = service.Post(new ShortUrlRequest { Url = givenUrl });
 
             response.Shortened.Should().Be("http://a.b.c/123");
-            //response.Destination.Should().Be("http://example.com/one");
+        }
+
+        [Test]
+        public void PostShouldCreateCustomShortUrl()
+        {
+            var service = _appHost.Container.Resolve<UrlShorteningService>();
+            service.Request = new MockRequest(); // For the Absolute Uri
+            var givenUrl = "http://ex.ampl/two";
+
+            var response = service.Post(new CustomShortUrlRequest { Url = givenUrl, CustomPath = "2"});
+
+            response.Shortened.Should().Be("http://a.b.c/2");
         }
     }
 }

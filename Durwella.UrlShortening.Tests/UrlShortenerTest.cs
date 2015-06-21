@@ -23,6 +23,11 @@ namespace Durwella.UrlShortening.Tests
             _subject = new UrlShortener(BaseUrl, _mockRepository.Object, _mockHashScheme.Object, _mockUnwrapper.Object);
         }
 
+        private void SetupWithMemoryRepository()
+        {
+            _subject = new UrlShortener(BaseUrl, new MemoryAliasRepository(), _mockHashScheme.Object, _mockUnwrapper.Object);
+        }
+
         [Test]
         public void ShouldSaveAndReturnHash()
         {
@@ -91,7 +96,7 @@ namespace Durwella.UrlShortening.Tests
         [Test]
         public void CanShortenWithCustomUrl()
         {
-            _subject = new UrlShortener(BaseUrl, new MemoryAliasRepository(), _mockHashScheme.Object, _mockUnwrapper.Object);
+            SetupWithMemoryRepository();
             var url = "http://example.com/1/2/3";
             var hash = "asdf";
             _mockHashScheme.Setup(h => h.GetKey(url)).Returns(hash);
@@ -108,7 +113,7 @@ namespace Durwella.UrlShortening.Tests
         [Test]
         public void ShouldThrowIfCustomAlreadyInUse()
         {
-            _subject = new UrlShortener(BaseUrl, new MemoryAliasRepository(), _mockHashScheme.Object, _mockUnwrapper.Object);
+            SetupWithMemoryRepository();
             var url = "http://example.com/1/2/3";
             var hash = "asdf";
             _mockHashScheme.Setup(h => h.GetKey(url)).Returns(hash);
@@ -144,6 +149,20 @@ namespace Durwella.UrlShortening.Tests
 
             shortened.Should().Be("http://goto/custom");
             _mockRepository.Verify(r => r.Add(hash, url));
+        }
+
+        [Test]
+        public void WhenNoPreviousHashShouldNotTryGetOrRemove()
+        {
+            SetupWithMemoryRepository();
+            var url = "http://example.com/1/2/3";
+            var customHash = "T2";
+
+            string customShortened = _subject.ShortenWithCustomHash(url, customHash);
+
+            // MemoryAliasRepository will throw if we try to GetKey when url not already present
+            _subject.Repository.GetValue(customHash).Should().Be(url);
+            customShortened.Should().Be("http://goto/T2");
         }
     }
 }
