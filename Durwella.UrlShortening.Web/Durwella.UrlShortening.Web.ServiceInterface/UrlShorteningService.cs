@@ -17,18 +17,13 @@ namespace Durwella.UrlShortening.Web.ServiceInterface
         [Authenticate]
         public ShortUrlResponse Post(ShortUrlRequest shortUrlRequest)
         {
-            return MakeShortUrlResponse(shortener => shortener.Shorten(shortUrlRequest.Url));
-        }
-
-        [Authenticate]
-        public ShortUrlResponse Post(CustomShortUrlRequest customShortUrlRequest)
-        {
             // TODO: Validate custom path is valid for a url (e.g. only contains letters and numbers)
             // TODO: Validate custom path does not use a reserved path (e.g. shorten)
-            // TODO: Prevent changing a short URL that was previously shared/followed or created by someone else...
-            return MakeShortUrlResponse(shortener => shortener.ShortenWithCustomHash(customShortUrlRequest.Url, customShortUrlRequest.CustomPath));
+            return String.IsNullOrWhiteSpace(shortUrlRequest.CustomPath) ?
+                MakeShortUrlResponse(shortener => shortener.Shorten(shortUrlRequest.Url)) : 
+                MakeShortUrlResponse(shortener => shortener.ShortenWithCustomHash(shortUrlRequest.Url, shortUrlRequest.CustomPath));
         }
-        
+
         public object Get(FollowShortUrlRequest request)
         {
             if (!AliasRepository.ContainsKey(request.Key))

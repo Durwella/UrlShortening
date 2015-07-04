@@ -86,7 +86,7 @@ namespace Durwella.UrlShortening.Web.Tests
             service.Request = new MockRequest(); // For the Absolute Uri
             var givenUrl = "http://ex.ampl/two";
 
-            var response = service.Post(new CustomShortUrlRequest { Url = givenUrl, CustomPath = "2"});
+            var response = service.Post(new ShortUrlRequest { Url = givenUrl, CustomPath = "2"});
 
             response.Shortened.Should().Be("http://a.b.c/2");
         }

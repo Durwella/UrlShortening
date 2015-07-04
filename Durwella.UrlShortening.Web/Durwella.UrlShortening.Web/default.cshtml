@@ -12,9 +12,7 @@
                     $scope.shortenedUrl = null;
                     $scope.errorMessage = null;
                     $scope.waiting = true;
-                    var action = angular.isString($scope.customPath) && $scope.customPath.length > 0 ?
-                        '/shorten-custom' : '/shorten';
-                    $http.post(action, { Url: $scope.longUrl, CustomPath: $scope.customPath })
+                    $http.post('/shorten', { Url: $scope.longUrl, CustomPath: $scope.customPath })
                         .success(function (response) {
                             $scope.shortenedUrl = response.Shortened;
                             $scope.waiting = false;
