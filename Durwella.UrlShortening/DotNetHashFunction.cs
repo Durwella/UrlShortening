@@ -2,7 +2,7 @@
 
 namespace Durwella.UrlShortening
 {
-    public class DefaultHashFunction : IHashFunction
+    public class DotNetHashFunction : IHashFunction
     {
         public byte[] GetHashBytes(string s)
         {

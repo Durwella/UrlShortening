@@ -17,7 +17,6 @@ namespace Durwella.UrlShortening.Web.ServiceInterface
         [Authenticate]
         public ShortUrlResponse Post(ShortUrlRequest shortUrlRequest)
         {
-            // TODO: Validate custom path is valid for a url (e.g. only contains letters and numbers)
             // TODO: Validate custom path does not use a reserved path (e.g. shorten)
             return String.IsNullOrWhiteSpace(shortUrlRequest.CustomPath) ?
                 MakeShortUrlResponse(shortener => shortener.Shorten(shortUrlRequest.Url)) : 
@@ -34,7 +33,7 @@ namespace Durwella.UrlShortening.Web.ServiceInterface
 
         private ShortUrlResponse MakeShortUrlResponse(Func<UrlShortener, string> shorten)
         {
-            var hashScheme = Resolver.TryResolve<IHashScheme>() ?? new DefaultHashScheme();
+            var hashScheme = Resolver.TryResolve<IHashScheme>() ?? Default.HashScheme();
             var urlUnwrapper = Resolver.TryResolve<IUrlUnwrapper>() ?? new WebClientUrlUnwrapper();
             var uri = new Uri(Request.AbsoluteUri);
             var baseUri = uri.GetLeftPart(UriPartial.Authority);

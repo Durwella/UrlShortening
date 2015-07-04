@@ -67,8 +67,9 @@
     <Compile Include="AzureTableAliasRepository.cs" />
     <Compile Include="Base64StringEncoder.cs" />
     <Compile Include="BaseHashScheme.cs" />
-    <Compile Include="DefaultHashFunction.cs" />
-    <Compile Include="DefaultHashScheme.cs" />
+    <Compile Include="Default.cs" />
+    <Compile Include="DotNetHashFunction.cs" />
+    <Compile Include="DotNetHashScheme.cs" />
     <Compile Include="HexStringEncoder.cs" />
     <Compile Include="IAliasRepository.cs" />
     <Compile Include="IHashFunction.cs" />

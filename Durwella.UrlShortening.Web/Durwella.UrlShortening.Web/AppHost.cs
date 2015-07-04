@@ -71,7 +71,7 @@ namespace Durwella.UrlShortening.Web
         {
             try
             {
-                var lockUrlMinutes = ConfigUtils.GetAppSetting<int>("LockUrlMinutes",
+                var lockUrlMinutes = ConfigUtils.GetAppSetting("LockUrlMinutes",
                     (int) azureStorageRepo.LockAge.TotalMinutes);
                 azureStorageRepo.LockAge = TimeSpan.FromMinutes(lockUrlMinutes);
             }
@@ -91,7 +91,9 @@ namespace Durwella.UrlShortening.Web
                     var preferredHashLength = Int32.Parse(preferredHashLengthString);
                     if (preferredHashLength < 0)
                         throw new FormatException("Expected PreferredHashLength to be positive.");
-                    container.Register<IHashScheme>(new DefaultHashScheme { LengthPreference = preferredHashLength });
+                    var hashScheme = Default.HashScheme();
+                    hashScheme.LengthPreference = preferredHashLength;
+                    container.Register(hashScheme);
                 }
                 catch (FormatException exception)
                 {

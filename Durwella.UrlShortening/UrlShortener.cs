@@ -18,7 +18,7 @@ namespace Durwella.UrlShortening
         }
 
         public UrlShortener(string baseUrl)
-            : this(baseUrl, new MemoryAliasRepository(), new DefaultHashScheme(), new WebClientUrlUnwrapper())
+            : this(baseUrl, new MemoryAliasRepository(), Default.HashScheme(), new WebClientUrlUnwrapper())
         {
         }
 
