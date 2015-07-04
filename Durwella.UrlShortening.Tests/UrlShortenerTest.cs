@@ -166,14 +166,16 @@ namespace Durwella.UrlShortening.Tests
         }
 
         [Test]
-        public void ThrowWhenInvalidCharactersInCustomPath()
+        public void ThrowWhenInvalidCustomPath()
         {
             // http://www.ietf.org/rfc/rfc3986.txt
             // unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
             ExpectExceptionForCustomPaths(
                 "/", "\\", "!", "@", "#", ":", "$", "%", "^", "&", "*", "(", ")",
                 "`", ",", "<", ">", "?",
-                "abc?", "\n", "\t", "B.1/23"
+                "abc?", "\n", "\t", "B.1/23",
+                ".", "..", "...", "a.", "a..",
+                new String('a', 101)    // Limit to 100 characters. Real limit is around 2k, but why support more than 100?
                 );
         }
 

@@ -45,9 +45,10 @@ namespace Durwella.UrlShortening
         {
             if (String.IsNullOrWhiteSpace(customHash))
                 throw new ArgumentException("The custom short URL cannot be empty.");
-            // unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
-            var regex = new Regex(@"[a-z]|[A-Z]|[0-9]|\-|\.|_|\~");
-            if (!customHash.All(c => regex.IsMatch(c.ToString()) ))
+            if (customHash.Length > 100)
+                throw new ArgumentException("The custom short URL must be no longer than 100 characters.");
+            var unreserved = new Regex(@"[a-z]|[A-Z]|[0-9]|\-|\.|_|\~");
+            if (customHash.EndsWith(".") || !customHash.All(c => unreserved.IsMatch(c.ToString()) ))
                 throw new ArgumentException(
                     "The custom short URL must only contain letters A ... Z, numbers 0 ... 9 or " + 
                     "dash (-), underscore (_), dot(.), or tilde (~)");
