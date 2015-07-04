@@ -6,11 +6,6 @@
     {
         public int LengthPreference { get; set; }
 
-        protected BaseHashScheme()
-        {
-            LengthPreference = 8;
-        }
-
         public string GetKey(string value)
         {
             return GetKey(value, 0);
