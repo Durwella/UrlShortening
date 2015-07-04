@@ -71,6 +71,7 @@
     <Compile Include="IUrlUnwrapper.cs" />
     <Compile Include="MemoryAliasRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sha1HexScheme.cs" />
     <Compile Include="UrlShortener.cs" />
     <Compile Include="WebClientUrlUnwrapper.cs" />
   </ItemGroup>

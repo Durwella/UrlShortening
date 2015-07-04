@@ -29,6 +29,8 @@ namespace Durwella.UrlShortening
                 .Replace("=", "")
                 .Replace("+", "-")
                 .Replace("/", "_");
+            while (key.Length < LengthPreference)
+                key += key;
             return key.Substring(0, LengthPreference);
         }
     }
