@@ -164,5 +164,44 @@ namespace Durwella.UrlShortening.Tests
             _subject.Repository.GetValue(customHash).Should().Be(url);
             customShortened.Should().Be("http://goto/T2");
         }
+
+        [Test]
+        public void ThrowWhenInvalidCharactersInCustomPath()
+        {
+            // http://www.ietf.org/rfc/rfc3986.txt
+            // unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
+            ExpectExceptionForCustomPaths(
+                "/", "\\", "!", "@", "#", ":", "$", "%", "^", "&", "*", "(", ")",
+                "`", ",", "<", ">", "?",
+                "abc?", "\n", "\t", "B.1/23"
+                );
+        }
+
+        [Test]
+        public void DoNotThrowWhenValidCharactersInCustomPath()
+        {
+            var custom = new[] {"a", "z", "Z1", "1M", "~~~", ".1", "_-~.abcXYZ"};
+            foreach (var c in custom)
+                _subject.ShortenWithCustomHash("http://example.com", c);
+        }
+
+        private void ExpectExceptionForCustomPaths(params string[] custom)
+        {
+            foreach (var c in custom)
+                ExpectExceptionForCustomPath(c);
+        }
+
+        private void ExpectExceptionForCustomPath(string custom)
+        {
+            try
+            {
+                _subject.ShortenWithCustomHash("http://example.com", custom);
+            }
+            catch (Exception)
+            {
+                return;
+            }
+            Assert.Fail("Expected exception for custom path: " + custom);
+        }
     }
 }
