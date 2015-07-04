@@ -79,7 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AzureTableAliasRepositoryTest.cs" />
-    <Compile Include="DefaultHashSchemeTest.cs" />
+    <Compile Include="HashSchemesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UrlShortenerTest.cs" />
     <Compile Include="WebClientUrlUnwrapperTest.cs" />

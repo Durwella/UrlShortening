@@ -65,12 +65,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AzureTableAliasRepository.cs" />
+    <Compile Include="Base64StringEncoder.cs" />
+    <Compile Include="BaseHashScheme.cs" />
+    <Compile Include="DefaultHashFunction.cs" />
     <Compile Include="DefaultHashScheme.cs" />
+    <Compile Include="HexStringEncoder.cs" />
     <Compile Include="IAliasRepository.cs" />
+    <Compile Include="IHashFunction.cs" />
     <Compile Include="IHashScheme.cs" />
+    <Compile Include="IStringEncoder.cs" />
     <Compile Include="IUrlUnwrapper.cs" />
     <Compile Include="MemoryAliasRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sha1HashFunction.cs" />
     <Compile Include="Sha1HexScheme.cs" />
     <Compile Include="UrlShortener.cs" />
     <Compile Include="WebClientUrlUnwrapper.cs" />

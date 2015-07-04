@@ -13,7 +13,7 @@ namespace Durwella.UrlShortening.Tests
             var interfaceType = typeof(IHashScheme);
             var hashSchemes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
-                .Where(p => interfaceType.IsAssignableFrom(p) && p.IsClass);
+                .Where(p => interfaceType.IsAssignableFrom(p) && p.IsClass && !p.IsAbstract);
             foreach (var hashScheme in hashSchemes)
             {
                 var scheme = (IHashScheme) Activator.CreateInstance(hashScheme);
