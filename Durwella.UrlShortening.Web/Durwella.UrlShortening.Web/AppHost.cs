@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
+using System.Linq;
 using Durwella.UrlShortening.Web.ServiceInterface;
 using Funq;
 using ServiceStack;
@@ -12,8 +14,10 @@ using ServiceStack.Razor;
 
 namespace Durwella.UrlShortening.Web
 {
-    public class AppHost : AppHostBase
+    public class AppHost : AppHostBase, IProtectedPathList
     {
+        public IList<string> ProtectedPaths { get { return RestPaths.Select(rp => rp.Path).ToList(); } }
+
         /// Base constructor requires a name and assembly to locate web service classes.
         public AppHost()
             : base("Durwella.UrlShortening.Web", typeof (UrlShorteningService).Assembly)
@@ -36,11 +40,12 @@ namespace Durwella.UrlShortening.Web
             Plugins.Add(new SwaggerFeature());
         }
 
-        private static void SetupUrlShortening(Container container)
+        private void SetupUrlShortening(Container container)
         {
             container.Register<IResolver>(container);
             var aliasRepository = SetupAzureStorageAliasRepository() ?? new MemoryAliasRepository();
             container.Register(aliasRepository);
+            container.Register<IProtectedPathList>(this);
             SetupPreferredHashLength(container);
         }
 

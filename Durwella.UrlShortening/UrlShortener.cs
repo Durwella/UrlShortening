@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -10,6 +12,8 @@ namespace Durwella.UrlShortening
         public IAliasRepository Repository { get; private set; }
         public IUrlUnwrapper UrlUnwrapper { get; private set; }
         public string BaseUrl { get; private set; }
+        public IList<string> ProtectedPaths { get; set; }
+
         public const int MaximumHashAttempts = 500;
 
         public UrlShortener()
@@ -33,6 +37,7 @@ namespace Durwella.UrlShortening
             Repository = repository;
             HashScheme = hashScheme;
             UrlUnwrapper = urlUnwrapper;
+            ProtectedPaths = new string[]{};
         }
 
         public string Shorten(string url)
@@ -52,6 +57,8 @@ namespace Durwella.UrlShortening
                 throw new ArgumentException(
                     "The custom short URL must only contain letters A ... Z, numbers 0 ... 9 or " + 
                     "dash (-), underscore (_), dot(.), or tilde (~)");
+            if (NotAllowed.Contains(customHash))
+                throw new ArgumentException("That custom short URL is not available.");
             var directUrl = UrlUnwrapper.GetDirectUrl(url);
             if (Repository.ContainsKey(customHash))
                 throw new ArgumentException("The given custom short URL is already in use.");
@@ -89,6 +96,18 @@ namespace Durwella.UrlShortening
             var baseUri = new Uri(BaseUrl);
             var newUri = new Uri(baseUri, key);
             return newUri.ToString();
+        }
+
+        private IList<string> NotAllowed
+        {
+            get
+            {
+                return ProtectedPaths.Select(p => 
+                        p.Split(new[] {'/'}, StringSplitOptions.RemoveEmptyEntries)
+                        .First())
+                    .Distinct()
+                    .ToList();
+            }
         }
     }
 }

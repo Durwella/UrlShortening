@@ -10,6 +10,7 @@ namespace Durwella.UrlShortening.Web.ServiceInterface
     {
         public IResolver Resolver { get; set; }
         public IAliasRepository AliasRepository { get; set; }
+        public IProtectedPathList ProtectedPathList { get; set; }
 
         // Can't have a persistent UrlShortener with current architecture because can't get absolute uri until have a request
         //public UrlShortener UrlShortener { get; set; }
@@ -17,7 +18,6 @@ namespace Durwella.UrlShortening.Web.ServiceInterface
         [Authenticate]
         public ShortUrlResponse Post(ShortUrlRequest shortUrlRequest)
         {
-            // TODO: Validate custom path does not use a reserved path (e.g. shorten)
             return String.IsNullOrWhiteSpace(shortUrlRequest.CustomPath) ?
                 MakeShortUrlResponse(shortener => shortener.Shorten(shortUrlRequest.Url)) : 
                 MakeShortUrlResponse(shortener => shortener.ShortenWithCustomHash(shortUrlRequest.Url, shortUrlRequest.CustomPath));
@@ -37,7 +37,10 @@ namespace Durwella.UrlShortening.Web.ServiceInterface
             var urlUnwrapper = Resolver.TryResolve<IUrlUnwrapper>() ?? new WebClientUrlUnwrapper();
             var uri = new Uri(Request.AbsoluteUri);
             var baseUri = uri.GetLeftPart(UriPartial.Authority);
-            var urlShortener = new UrlShortener(baseUri, AliasRepository, hashScheme, urlUnwrapper);
+            var urlShortener = new UrlShortener(baseUri, AliasRepository, hashScheme, urlUnwrapper)
+            {
+                ProtectedPaths = ProtectedPathList.ProtectedPaths
+            };
             var shortened = shorten(urlShortener);
             return new ShortUrlResponse(shortened);
         }

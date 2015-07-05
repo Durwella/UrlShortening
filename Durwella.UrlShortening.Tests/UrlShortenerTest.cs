@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -177,6 +178,25 @@ namespace Durwella.UrlShortening.Tests
                 ".", "..", "...", "a.", "a..",
                 new String('a', 101)    // Limit to 100 characters. Real limit is around 2k, but why support more than 100?
                 );
+        }
+
+        [Test]
+        public void ThrowWhenProtectedPath()
+        {
+            _subject.ProtectedPaths = new[]
+            {
+                "illegal", 
+                "not.allowed", 
+                "1/2",
+                "/no/{scrubs}",
+                "/auth",
+                "/auth/basic"
+            };
+            ExpectExceptionForCustomPaths("illegal", "no", "auth", "1", "not.allowed");
+            _subject.ShortenWithCustomHash("a", "not");
+            _subject.ShortenWithCustomHash("b", "not.illegal");
+            _subject.ShortenWithCustomHash("c", "1_");
+            _subject.ShortenWithCustomHash("d", "2");
         }
 
         [Test]

@@ -7,6 +7,7 @@ using ServiceStack.Configuration;
 using ServiceStack.Testing;
 using ServiceStack.Web;
 using System;
+using System.Collections.Generic;
 
 namespace Durwella.UrlShortening.Web.Tests
 {
@@ -27,6 +28,17 @@ namespace Durwella.UrlShortening.Web.Tests
             }
         }
 
+        class FakeProtectedPaths : IProtectedPathList
+        {
+            public IList<string> ProtectedPaths
+            {
+                get
+                {
+                    return new [] { "/shorten", "/auth/{how}" };
+                }
+            }
+        }
+
         private readonly ServiceStackHost _appHost;
 
         public AppHostServiceTest()
@@ -39,6 +51,7 @@ namespace Durwella.UrlShortening.Web.Tests
                     container.RegisterAs<FakeAliasRepository, IAliasRepository>();
                     container.RegisterAs<FakeHashScheme, IHashScheme>();
                     container.RegisterAs<FakeUrlUnwrapper, IUrlUnwrapper>();
+                    container.RegisterAs<FakeProtectedPaths, IProtectedPathList>();
                     container.Register(new UrlShortener("http://a.b.c", container.Resolve<IAliasRepository>(), container.Resolve<IHashScheme>(), container.Resolve<IUrlUnwrapper>()));
                     // TODO: Base url via owin?
                 }
@@ -86,9 +99,20 @@ namespace Durwella.UrlShortening.Web.Tests
             service.Request = new MockRequest(); // For the Absolute Uri
             var givenUrl = "http://ex.ampl/two";
 
-            var response = service.Post(new ShortUrlRequest { Url = givenUrl, CustomPath = "2"});
+            var response = service.Post(new ShortUrlRequest { Url = givenUrl, CustomPath = "2" });
 
             response.Shortened.Should().Be("http://a.b.c/2");
+        }
+
+        [Test]
+        [ExpectedException]
+        public void ShouldNotAllowReservedPaths()
+        {
+            var service = _appHost.Container.Resolve<UrlShorteningService>();
+            service.Request = new MockRequest();
+
+            service.Post(new ShortUrlRequest { Url = "http://example.com", 
+                CustomPath = "shorten" });
         }
     }
 }
