@@ -26,7 +26,7 @@ In that case short URLs will break when the web app is restarted.
 [UrlShortener](Durwella.UrlShortening/UrlShortener.cs) contains the core logic. 
 There are interfaces you can use to customize the specific mechanics:
 
-- [IHashScheme](Durwella.UrlShortening/IHashScheme.cs) - Used to generate the short URL. Should generate an appropriate short "hash" from a long string. A *poor* [default](Durwella.UrlShortening/DefaultHashScheme.cs) imlpementation is provided which generates 6 character strings from [String.GetHashCode](https://msdn.microsoft.com/en-us/library/system.string.gethashcode). Should also provide a way to iteratetively generate new hashes from the same input in the case of a hash collision.
+- [IHashScheme](Durwella.UrlShortening/IHashScheme.cs) - Used to generate the short URL. Should generate an appropriate short "hash" from a long string. A [default](Durwella.UrlShortening/Sha1Base64Scheme.cs) implementation is provided which is based on Base64 encoding of SHA1. Implementations must also provide a way to iteratetively generate new hashes from the same input in the case of a hash collision.
 - [IAliasRepository](Durwella.UrlShortening/IAliasRepository.cs) - Dictionary-like persistence of "alias" or "hash" of one string (the key) to another (the value). Used to save mapping between short and long URLs. The [default](Durwella.UrlShortening/AzureTableAliasRepository.cs) uses Azure Table storage. The [fallback](Durwella.UrlShortening/MemoryAliasRepository.cs) uses an in-memory Dictionary.
 - [IUrlUnwrapper](Durwella.UrlShortening/IUrlUnwrapper.cs) - Responsible for resolving a direct URL to a resource. For example the provided URL might already be a 'short URL', which could lead to multiple redirects or a redirect loop. The [default](Durwella.UrlShortening/WebClientUrlUnwrapper.cs) uses [WebClient](https://msdn.microsoft.com/en-us/library/system.net.webclient).
 
@@ -60,4 +60,3 @@ Testing Azure deployment can be done from Azure PowerShell something like this..
         -title $site -adminPassword $pw
     # Testing...
     Remove-AzureResourceGroup -Name $site
-
