@@ -26,7 +26,7 @@ namespace Durwella.UrlShortening.Web.ServiceInterface
         public object Get(FollowShortUrlRequest request)
         {
             if (!AliasRepository.ContainsKey(request.Key))
-                return new HttpResult { StatusCode = HttpStatusCode.NotFound };
+                throw HttpError.NotFound("Short URL '{0}' does not exist".Fmt(request.Key));
             var destination = AliasRepository.GetValue(request.Key);
             return new HttpResult { StatusCode = HttpStatusCode.Redirect, Headers = { { HttpHeaders.Location, destination } } };
         }
