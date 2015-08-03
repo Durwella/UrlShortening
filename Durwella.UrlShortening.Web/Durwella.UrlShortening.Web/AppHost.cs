@@ -8,6 +8,7 @@ using Funq;
 using ServiceStack;
 using ServiceStack.Api.Swagger;
 using ServiceStack.Auth;
+using ServiceStack.Authentication.Aad;
 using ServiceStack.Caching;
 using ServiceStack.Configuration;
 using ServiceStack.Razor;
@@ -112,26 +113,31 @@ namespace Durwella.UrlShortening.Web
         {
             // We use the [Authenticate] attribute to control access to creation of short URLs.
             // Therefore we have to set up an IAuthProvider even if the administrator doesn't want authentication.
-            var adminPassword = ConfigurationManager.AppSettings["AdminPassword"];
-            var requirePassword = !String.IsNullOrWhiteSpace(adminPassword);
-            var authProviders = requirePassword
-                ? new IAuthProvider[]
-                {
-                    new BasicAuthProvider(), //Sign-in with Basic Auth
-                    new CredentialsAuthProvider(), //HTML Form post of UserName/Password credentials
-                }
-                : new IAuthProvider[]
-                {
-                    new AlwaysAuthorizedAuthProvider(),
-                };
-            Plugins.Add(new AuthFeature(() => new AuthUserSession(), authProviders));
-            if (requirePassword)
+            var appSettings = ConfigurationManager.AppSettings;
+            var useAad = !appSettings["oauth.aad.ClientId"].IsNullOrEmpty() &&
+                         !appSettings["oauth.aad.ClientSecret"].IsNullOrEmpty();            
+            var adminPassword = appSettings["AdminPassword"];
+            var hasAdminPassword = !adminPassword.IsNullOrEmpty();
+            var authProviders = new List<IAuthProvider>();
+            string htmlRedirect = null;
+            if (hasAdminPassword)
             {
+                htmlRedirect = "/auth/login";
+                authProviders.Add(new BasicAuthProvider(AppSettings)); //Sign-in with Basic Auth
+                authProviders.Add(new CredentialsAuthProvider(AppSettings)); //HTML Form post of UserName/Password credentials
                 container.Register<ICacheClient>(new MemoryCacheClient());
                 var userRep = new InMemoryAuthRepository();
                 userRep.CreateUserAuth(new UserAuth {UserName = "admin"}, adminPassword);
                 container.Register<IUserAuthRepository>(userRep);
             }
+            if (useAad)
+            {
+                htmlRedirect = "/auth/aad";
+                authProviders.Add(new AadAuthProvider(AppSettings));
+            }
+            if (!useAad && !hasAdminPassword)
+                authProviders.Add(new AlwaysAuthorizedAuthProvider());
+            Plugins.Add(new AuthFeature(() => new AuthUserSession(), authProviders.ToArray(), htmlRedirect));
         }
     }
 }
