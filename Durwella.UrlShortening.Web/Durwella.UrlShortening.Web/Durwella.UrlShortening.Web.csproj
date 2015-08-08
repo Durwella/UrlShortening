@@ -216,6 +216,7 @@
     <TypeScriptCompile Include="scripts\typings\angularjs\angular.d.ts" />
     <TypeScriptCompile Include="scripts\typings\bootstrap\bootstrap.d.ts" />
     <TypeScriptCompile Include="scripts\typings\jquery\jquery.d.ts" />
+    <TypeScriptCompile Include="scripts\typings\ServiceModel.d.ts" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
