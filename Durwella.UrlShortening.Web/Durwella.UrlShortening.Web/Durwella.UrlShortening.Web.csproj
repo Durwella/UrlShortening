@@ -148,7 +148,6 @@
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="packages.config" />
-    <Content Include="scripts\angular-mocks.js" />
     <Content Include="default.cshtml" />
     <Content Include="scripts\angular-route.js" />
     <Content Include="scripts\angular-route.min.js" />
@@ -163,11 +162,11 @@
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
     <None Include="scripts\jquery-2.1.4.intellisense.js" />
+    <Content Include="scripts\angular-mocks.js" />
     <Content Include="scripts\bootstrap.js" />
     <Content Include="scripts\bootstrap.min.js" />
     <Content Include="scripts\jquery-2.1.4.js" />
     <Content Include="scripts\jquery-2.1.4.min.js" />
-    <Content Include="scripts\npm.js" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="hello.cshtml" />
     <Content Include="Views\Hello.cshtml" />
