@@ -6,13 +6,18 @@
 
 <div ng-app="urlShortenerApp">
     <div ng-controller="urlShortenerCtrl">
+        @*<button type="button" class="btn btn-default" ng-click="showLogon()">Log on</button>*@
         <div>
             <form ng-submit="submitLongUrl()" name="shortenForm">
-                <input class="form-control input-lg" ng-model="longUrl" id="LongUrl" type="url" placeholder="Paste your long URL">
-                <input class="form-control input-sm" ng-model="customPath" id="CustomPath" type="text" placeholder="Type a custom short path (optional)" style="margin-top: 5px">
+                <input class="form-control input-lg"
+                       ng-model="longUrl" id="LongUrl"
+                       type="url" placeholder="Paste your long URL">
+                <input class="form-control input-sm"
+                       ng-model="customPath" id="CustomPath"
+                       type="text" placeholder="Type a custom short path (optional)" style="margin-top: 5px">
                 <input class="btn btn-primary" style="margin-top: 5px"
-                       ng-disabled="waiting" 
-                       type="submit" name="go" value="Shorten!" />
+                       ng-disabled="waiting"
+                       type="submit" name="go" value="Shorten!"/>
             </form>
             <div style="margin-top: 15px"></div>
             <div class="container danger alert-danger" ng-show="errorMessage">

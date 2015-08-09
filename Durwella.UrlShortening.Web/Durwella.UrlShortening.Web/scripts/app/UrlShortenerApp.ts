@@ -1,4 +1,5 @@
-﻿/// <reference path="../typings/servicemodel.d.ts" />
+﻿/// <reference path="../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
+/// <reference path="../typings/servicemodel.d.ts" />
 /// <reference path="../typings/angularjs/angular.d.ts" />
 
 module UrlShortenerApp {
@@ -9,6 +10,9 @@ module UrlShortenerApp {
     import HttpPromiseCallback = angular.IHttpPromiseCallback;
     import HttpHeadersGetter = angular.IHttpHeadersGetter;
     import RequestConfig = angular.IRequestConfig;
+    import ModalService = angular.ui.bootstrap.IModalService;
+    import ModalServiceInstance = angular.ui.bootstrap.IModalServiceInstance;
+    import Authenticate = Durwella.UrlShortening.Web.ServiceModel.Authenticate;
 
     interface IUrlShortenerScope extends ng.IScope {
         longUrl: string;
@@ -18,6 +22,7 @@ module UrlShortenerApp {
         waiting: boolean;
         submitLongUrl: Function;
         unauthorized: boolean;
+        showLogon: () => void;
     }
 
     enum HttpStatusCodes {
@@ -42,6 +47,7 @@ module UrlShortenerApp {
         static $inject = [
             "$scope",
             "$http",
+            "$modal",
             "$location"
         ];
 
@@ -50,6 +56,7 @@ module UrlShortenerApp {
         constructor(
             private $scope: IUrlShortenerScope,
             private $http: ng.IHttpService,
+            private $modal: ModalService,
             private $location: ng.ILocationService
         ) {
             $scope.submitLongUrl = () => {
@@ -63,14 +70,21 @@ module UrlShortenerApp {
                     .success(this.onSuccess)
                     .error(this.onError);
             };
+            $scope.showLogon = () => this.showLogon();
         }
 
-        onSuccess: HttpPromiseCallback<ShortUrlResponse> = (response: ShortUrlResponse, status: number, headers: HttpHeadersGetter, config: RequestConfig) => {
+        onSuccess: HttpPromiseCallback<ShortUrlResponse> = (
+            response: ShortUrlResponse, status: number,
+            headers: HttpHeadersGetter, config: RequestConfig
+        ) => {
             this.$scope.shortenedUrl = response.Shortened;
             this.$scope.waiting = false;
         }
 
-        onError: HttpPromiseCallback<any> = (response: any, status: number, headers: HttpHeadersGetter, config: RequestConfig) => {
+        onError: HttpPromiseCallback<any> = (
+            response: any, status: number,
+            headers: HttpHeadersGetter, config: RequestConfig
+        ) => {
             console.log("Error: ", response);
             var message = "Unknown Error";
             if (status === HttpStatusCodes.Unauthorized) {
@@ -84,8 +98,52 @@ module UrlShortenerApp {
             this.$scope.errorMessage = message;
             this.$scope.waiting = false;
         };
+
+        showLogon() {
+            var modalInstance = this.$modal.open({
+                templateUrl: '_logon.html',
+                controller: 'logonCtrl'
+            });
+        }
     }
 
-    angular.module("urlShortenerApp", [])
-        .controller("urlShortenerCtrl", UrlShortenerCtrl);
+    interface ILogonScope extends ng.IScope {
+        userName: string;
+        password: string;
+        errorMessage: string;
+        submitLogin: () => void;
+    }
+
+    class LogonCtrl {
+        static $inject = [
+            "$scope",
+            "$http",
+            "$modalInstance"
+        ];
+        constructor(
+            private $scope: ILogonScope,
+            private $http: ng.IHttpService,
+            private $modalInstance: ModalServiceInstance
+            ) {
+            $scope.submitLogin = () => {
+                var authRequest = <Authenticate> {
+                    UserName: $scope.userName,
+                    Password: $scope.password
+                };
+                $http.post("/auth/credentials", authRequest)
+                    .success((response: any) => {
+                        $modalInstance.close();
+                    })
+                    .error(() => {
+                        $scope.errorMessage = "Login failed.";
+                    });
+            };
+        }
+    }
+
+
+    angular.module("urlShortenerApp", ['ui.bootstrap'])
+        .controller("urlShortenerCtrl", UrlShortenerCtrl)
+        .controller("logonCtrl", LogonCtrl)
+    ;
 }
