@@ -21,7 +21,7 @@ module UrlShortenerApp {
         shortenedUrl: string;
         errorMessage: string;
         waiting: boolean;
-        submitLongUrl: Function;
+        submitLongUrl: () => void;
         showLogin: () => void;
     }
 
@@ -85,25 +85,32 @@ module UrlShortenerApp {
             response: any, status: number,
             headers: HttpHeadersGetter, config: RequestConfig
         ) => {
-            console.log("Error: ", response);
-            var message = "Unknown Error";
             if (status === HttpStatusCodes.Unauthorized) {
-                message = "Unauthorized. You must log in to create a short URL.";
+                this.$scope.errorMessage =
+                    "Unauthorized. You must log in to create a short URL.";
                 this.showLogin();
             }
-            if (response.hasOwnProperty("ResponseStatus")) {
-                var responseStatus = <ResponseStatus>response.ResponseStatus;
-                message = responseStatus.Message;
-            }
-            this.$scope.errorMessage = message;
+            else
+                this.$scope.errorMessage =
+                    UrlShortenerCtrl.getMessageFromResponseStatus(response);
             this.$scope.waiting = false;
         };
 
         showLogin() {
-            var modalInstance = this.$modal.open({
+            var modal = this.$modal.open({
                 templateUrl: '_login.html',
                 controller: 'loginCtrl'
             });
+            modal.result.then(() => this.$scope.submitLongUrl());
+        }
+
+        static getMessageFromResponseStatus(response: any) {
+            var message = "Unknown Error";
+            if (response.hasOwnProperty("ResponseStatus")) {
+                var responseStatus = <ResponseStatus>response.ResponseStatus;
+                message = responseStatus.Message;
+            }
+            return message;
         }
     }
 
@@ -133,19 +140,11 @@ module UrlShortenerApp {
                 };
                 $http.post("/auth/credentials", authRequest)
                     .success((response: AuthenticateResponse) => {
-                        $modalInstance.close();
+                        $modalInstance.close(response.UserName);
                     })
-                    .error((response: any, status: number) => {
-                        console.log("Error: ", response);
-                        var message = "Unknown Error";
-                        if (status === HttpStatusCodes.Unauthorized) {
-                            message = "Unauthorized. You must log in to create a short URL.";
-                        }
-                        if (response.hasOwnProperty("ResponseStatus")) {
-                            var responseStatus = <ResponseStatus>response.ResponseStatus;
-                            message = responseStatus.Message;
-                        }
-                        this.$scope.errorMessage = message;
+                    .error((response: any) => {
+                        this.$scope.errorMessage = 
+                            UrlShortenerCtrl.getMessageFromResponseStatus(response);
                     });
             };
         }
