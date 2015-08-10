@@ -122,8 +122,6 @@ namespace Durwella.UrlShortening.Web
             string htmlRedirect = null;
             if (hasAdminPassword)
             {
-                htmlRedirect = "/auth/login";
-                authProviders.Add(new BasicAuthProvider(AppSettings)); //Sign-in with Basic Auth
                 authProviders.Add(new CredentialsAuthProvider(AppSettings)); //HTML Form post of UserName/Password credentials
                 container.Register<ICacheClient>(new MemoryCacheClient());
                 var userRep = new InMemoryAuthRepository();

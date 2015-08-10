@@ -13,6 +13,7 @@ module UrlShortenerApp {
     import ModalService = angular.ui.bootstrap.IModalService;
     import ModalServiceInstance = angular.ui.bootstrap.IModalServiceInstance;
     import Authenticate = Durwella.UrlShortening.Web.ServiceModel.Authenticate;
+    import AuthenticateResponse = Durwella.UrlShortening.Web.ServiceModel.AuthenticateResponse;
 
     interface IUrlShortenerScope extends ng.IScope {
         longUrl: string;
@@ -21,8 +22,7 @@ module UrlShortenerApp {
         errorMessage: string;
         waiting: boolean;
         submitLongUrl: Function;
-        unauthorized: boolean;
-        showLogon: () => void;
+        showLogin: () => void;
     }
 
     enum HttpStatusCodes {
@@ -70,7 +70,7 @@ module UrlShortenerApp {
                     .success(this.onSuccess)
                     .error(this.onError);
             };
-            $scope.showLogon = () => this.showLogon();
+            $scope.showLogin = () => this.showLogin();
         }
 
         onSuccess: HttpPromiseCallback<ShortUrlResponse> = (
@@ -88,8 +88,8 @@ module UrlShortenerApp {
             console.log("Error: ", response);
             var message = "Unknown Error";
             if (status === HttpStatusCodes.Unauthorized) {
-                this.$scope.unauthorized = true;
                 message = "Unauthorized. You must log in to create a short URL.";
+                this.showLogin();
             }
             if (response.hasOwnProperty("ResponseStatus")) {
                 var responseStatus = <ResponseStatus>response.ResponseStatus;
@@ -99,43 +99,53 @@ module UrlShortenerApp {
             this.$scope.waiting = false;
         };
 
-        showLogon() {
+        showLogin() {
             var modalInstance = this.$modal.open({
-                templateUrl: '_logon.html',
-                controller: 'logonCtrl'
+                templateUrl: '_login.html',
+                controller: 'loginCtrl'
             });
         }
     }
 
-    interface ILogonScope extends ng.IScope {
+    interface ILoginScope extends ng.IScope {
         userName: string;
         password: string;
         errorMessage: string;
         submitLogin: () => void;
     }
 
-    class LogonCtrl {
+    class LoginCtrl {
         static $inject = [
             "$scope",
             "$http",
             "$modalInstance"
         ];
         constructor(
-            private $scope: ILogonScope,
+            private $scope: ILoginScope,
             private $http: ng.IHttpService,
             private $modalInstance: ModalServiceInstance
             ) {
             $scope.submitLogin = () => {
+                this.$scope.errorMessage = null;
                 var authRequest = <Authenticate> {
                     UserName: $scope.userName,
                     Password: $scope.password
                 };
                 $http.post("/auth/credentials", authRequest)
-                    .success((response: any) => {
+                    .success((response: AuthenticateResponse) => {
                         $modalInstance.close();
                     })
-                    .error(() => {
-                        $scope.errorMessage = "Login failed.";
+                    .error((response: any, status: number) => {
+                        console.log("Error: ", response);
+                        var message = "Unknown Error";
+                        if (status === HttpStatusCodes.Unauthorized) {
+                            message = "Unauthorized. You must log in to create a short URL.";
+                        }
+                        if (response.hasOwnProperty("ResponseStatus")) {
+                            var responseStatus = <ResponseStatus>response.ResponseStatus;
+                            message = responseStatus.Message;
+                        }
+                        this.$scope.errorMessage = message;
                     });
             };
         }
@@ -144,6 +154,6 @@ module UrlShortenerApp {
 
     angular.module("urlShortenerApp", ['ui.bootstrap'])
         .controller("urlShortenerCtrl", UrlShortenerCtrl)
-        .controller("logonCtrl", LogonCtrl)
+        .controller("loginCtrl", LoginCtrl)
     ;
 }
