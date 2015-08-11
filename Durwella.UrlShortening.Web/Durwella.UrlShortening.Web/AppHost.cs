@@ -114,26 +114,23 @@ namespace Durwella.UrlShortening.Web
             // We use the [Authenticate] attribute to control access to creation of short URLs.
             // Therefore we have to set up an IAuthProvider even if the administrator doesn't want authentication.
             var appSettings = ConfigurationManager.AppSettings;
-            var useAad = !appSettings["oauth.aad.ClientId"].IsNullOrEmpty() &&
-                         !appSettings["oauth.aad.ClientSecret"].IsNullOrEmpty();            
-            var adminPassword = appSettings["AdminPassword"];
-            var hasAdminPassword = !adminPassword.IsNullOrEmpty();
             var authProviders = new List<IAuthProvider>();
             string htmlRedirect = null;
-            if (hasAdminPassword)
+            if (appSettings.UseCredentials())
             {
+                var adminPassword = appSettings["AdminPassword"];
                 authProviders.Add(new CredentialsAuthProvider(AppSettings)); //HTML Form post of UserName/Password credentials
                 container.Register<ICacheClient>(new MemoryCacheClient());
                 var userRep = new InMemoryAuthRepository();
                 userRep.CreateUserAuth(new UserAuth {UserName = "admin"}, adminPassword);
                 container.Register<IUserAuthRepository>(userRep);
             }
-            if (useAad)
+            if (appSettings.UseAad())
             {
                 htmlRedirect = "/auth/aad";
                 authProviders.Add(new AadAuthProvider(AppSettings));
             }
-            if (!useAad && !hasAdminPassword)
+            if (!appSettings.UseAad() && !appSettings.UseCredentials())
                 authProviders.Add(new AlwaysAuthorizedAuthProvider());
             Plugins.Add(new AuthFeature(() => new AuthUserSession(), authProviders.ToArray(), htmlRedirect));
         }

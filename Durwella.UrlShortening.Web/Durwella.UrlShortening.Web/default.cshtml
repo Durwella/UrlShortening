@@ -1,14 +1,18 @@
-﻿@inherits ViewPage
+﻿@using Durwella.UrlShortening.Web
+@inherits ViewPage
 @{
-    ViewBag.Title = System.Configuration.ConfigurationManager.AppSettings["Title"];
+    var appSettings = System.Configuration.ConfigurationManager.AppSettings;
+    ViewBag.Title = appSettings["Title"];
     var user = Request.GetSession();
     var startAuthenticated = user.IsAuthenticated;
-    // TODO: Hide login stuff if no auth
 }
+
 <script src="~/scripts/app/UrlShortenerApp.js"></script>
 <div class="container" ng-app="urlShortenerApp">
     <div ng-controller="urlShortenerCtrl" data-start-authenticated="@startAuthenticated">
 
+        @if (appSettings.UseCredentials())
+        {
         <div class="pull-right">
             <button type="button" class="btn btn-default"
                     ng-show="!isAuthenticated"
@@ -23,6 +27,7 @@
                 <span class="glyphicon glyphicon-log-out"></span>
             </button>
         </div>
+        }
 
         <h1>@ViewBag.Title</h1>
 

@@ -191,6 +191,7 @@
   <ItemGroup>
     <Compile Include="AlwaysAuthorizedAuthProvider.cs" />
     <Compile Include="AppHost.cs" />
+    <Compile Include="AppSettingsExtensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
