@@ -1,30 +1,51 @@
 ﻿@inherits ViewPage
 @{
     ViewBag.Title = System.Configuration.ConfigurationManager.AppSettings["Title"];
+    // TODO: Handle already authenticated
+    // TODO: Hide login stuff if no auth
 }
 <script src="~/scripts/app/UrlShortenerApp.js"></script>
-
-<div ng-app="urlShortenerApp">
+<div class="container" ng-app="urlShortenerApp">
     <div ng-controller="urlShortenerCtrl">
-        <div>
-            <form ng-submit="submitLongUrl()" name="shortenForm">
-                <input class="form-control input-lg"
-                       ng-model="longUrl" id="LongUrl"
-                       type="url" placeholder="Paste your long URL">
-                <input class="form-control input-sm"
-                       ng-model="customPath" id="CustomPath"
-                       type="text" placeholder="Type a custom short path (optional)" style="margin-top: 5px">
-                <input class="btn btn-primary" style="margin-top: 5px"
-                       ng-disabled="waiting"
-                       type="submit" name="go" value="Shorten!"/>
-            </form>
-            <div style="margin-top: 15px"></div>
-            <div class="container danger alert-danger" ng-show="errorMessage">
-                <h4>{{errorMessage}}</h4>
-            </div>
-            <h3 ng-show="shortenedUrl">
-                <a href="{{shortenedUrl}}" ng-bind="shortenedUrl" target="_blank"></a>
-            </h3>
+
+        <div class="pull-right">
+            <button type="button" class="btn btn-default"
+                    ng-show="!isAuthenticated"
+                    aria-label="Sign in"
+                    tooltip-placement="bottom" tooltip="Sign in" ng-click="showLogin()">
+                <span class="glyphicon glyphicon-log-in"></span>
+            </button>
+            <button type="button" class="btn btn-default"
+                    ng-show="isAuthenticated"
+                    aria-label="Sign out"
+                    tooltip-placement="bottom" tooltip="Sign out" ng-click="logout()">
+                <span class="glyphicon glyphicon-log-out"></span>
+            </button>
         </div>
+        <h1>@ViewBag.Title</h1>
+
+        <div>
+            <div>
+                <form ng-submit="submitLongUrl()" name="shortenForm">
+                    <input class="form-control input-lg"
+                           ng-model="longUrl" id="LongUrl"
+                           type="url" placeholder="Paste your long URL">
+                    <input class="form-control input-sm"
+                           ng-model="customPath" id="CustomPath"
+                           type="text" placeholder="Type a custom short path (optional)" style="margin-top: 5px">
+                    <input class="btn btn-primary" style="margin-top: 5px"
+                           ng-disabled="waiting"
+                           type="submit" name="go" value="Shorten!"/>
+                </form>
+                <div style="margin-top: 15px"></div>
+                <div class="container danger alert-danger" ng-show="errorMessage">
+                    <h4>{{errorMessage}}</h4>
+                </div>
+                <h3 ng-show="shortenedUrl">
+                    <a href="{{shortenedUrl}}" ng-bind="shortenedUrl" target="_blank"></a>
+                </h3>
+            </div>
+        </div>
+
     </div>
 </div>

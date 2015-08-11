@@ -21,8 +21,10 @@ module UrlShortenerApp {
         shortenedUrl: string;
         errorMessage: string;
         waiting: boolean;
+        isAuthenticated: boolean;
         submitLongUrl: () => void;
         showLogin: () => void;
+        logout: () => void;
     }
 
     enum HttpStatusCodes {
@@ -59,6 +61,7 @@ module UrlShortenerApp {
             private $modal: ModalService,
             private $location: ng.ILocationService
         ) {
+            $scope.isAuthenticated = false;
             $scope.submitLongUrl = () => {
                 if (!$scope.longUrl)
                     return;
@@ -71,6 +74,7 @@ module UrlShortenerApp {
                     .error(this.onError);
             };
             $scope.showLogin = () => this.showLogin();
+            $scope.logout = () => this.logout();
         }
 
         onSuccess: HttpPromiseCallback<ShortUrlResponse> = (
@@ -101,7 +105,15 @@ module UrlShortenerApp {
                 templateUrl: '_login.html',
                 controller: 'loginCtrl'
             });
-            modal.result.then(() => this.$scope.submitLongUrl());
+            modal.result.then(() => {
+                this.$scope.isAuthenticated = true;
+                this.$scope.submitLongUrl();
+            });
+        }
+
+        logout() {
+            this.$http.get("/auth/logout")
+                .success(() => this.$scope.isAuthenticated = false);
         }
 
         static getMessageFromResponseStatus(response: any) {
