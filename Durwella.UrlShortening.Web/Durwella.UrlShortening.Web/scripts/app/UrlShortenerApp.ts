@@ -1,4 +1,5 @@
-﻿/// <reference path="../typings/servicemodel.d.ts" />
+﻿/// <reference path="../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
+/// <reference path="../typings/servicemodel.d.ts" />
 /// <reference path="../typings/angularjs/angular.d.ts" />
 
 module UrlShortenerApp {
@@ -9,6 +10,10 @@ module UrlShortenerApp {
     import HttpPromiseCallback = angular.IHttpPromiseCallback;
     import HttpHeadersGetter = angular.IHttpHeadersGetter;
     import RequestConfig = angular.IRequestConfig;
+    import ModalService = angular.ui.bootstrap.IModalService;
+    import ModalServiceInstance = angular.ui.bootstrap.IModalServiceInstance;
+    import Authenticate = Durwella.UrlShortening.Web.ServiceModel.Authenticate;
+    import AuthenticateResponse = Durwella.UrlShortening.Web.ServiceModel.AuthenticateResponse;
 
     interface IUrlShortenerScope extends ng.IScope {
         longUrl: string;
@@ -16,8 +21,10 @@ module UrlShortenerApp {
         shortenedUrl: string;
         errorMessage: string;
         waiting: boolean;
-        submitLongUrl: Function;
-        unauthorized: boolean;
+        isAuthenticated: boolean;
+        submitLongUrl: () => void;
+        showLogin: () => void;
+        logout: () => void;
     }
 
     enum HttpStatusCodes {
@@ -42,6 +49,8 @@ module UrlShortenerApp {
         static $inject = [
             "$scope",
             "$http",
+            "$modal",
+            "$attrs",
             "$location"
         ];
 
@@ -50,8 +59,11 @@ module UrlShortenerApp {
         constructor(
             private $scope: IUrlShortenerScope,
             private $http: ng.IHttpService,
+            private $modal: ModalService,
+            private $attrs: ng.IAttributes,
             private $location: ng.ILocationService
         ) {
+            $scope.isAuthenticated = $attrs["startAuthenticated"] === "True";
             $scope.submitLongUrl = () => {
                 if (!$scope.longUrl)
                     return;
@@ -63,29 +75,98 @@ module UrlShortenerApp {
                     .success(this.onSuccess)
                     .error(this.onError);
             };
+            $scope.showLogin = () => this.showLogin();
+            $scope.logout = () => this.logout();
         }
 
-        onSuccess: HttpPromiseCallback<ShortUrlResponse> = (response: ShortUrlResponse, status: number, headers: HttpHeadersGetter, config: RequestConfig) => {
+        onSuccess: HttpPromiseCallback<ShortUrlResponse> = (
+            response: ShortUrlResponse, status: number,
+            headers: HttpHeadersGetter, config: RequestConfig
+        ) => {
             this.$scope.shortenedUrl = response.Shortened;
             this.$scope.waiting = false;
         }
 
-        onError: HttpPromiseCallback<any> = (response: any, status: number, headers: HttpHeadersGetter, config: RequestConfig) => {
-            console.log("Error: ", response);
-            var message = "Unknown Error";
+        onError: HttpPromiseCallback<any> = (
+            response: any, status: number,
+            headers: HttpHeadersGetter, config: RequestConfig
+        ) => {
             if (status === HttpStatusCodes.Unauthorized) {
-                this.$scope.unauthorized = true;
-                message = "Unauthorized. You must log in to create a short URL.";
+                this.$scope.errorMessage =
+                    "Unauthorized. You must log in to create a short URL.";
+                this.showLogin();
             }
+            else
+                this.$scope.errorMessage =
+                    UrlShortenerCtrl.getMessageFromResponseStatus(response);
+            this.$scope.waiting = false;
+        };
+
+        showLogin() {
+            var modal = this.$modal.open({
+                templateUrl: '_login.html',
+                controller: 'loginCtrl'
+            });
+            modal.result.then(() => {
+                this.$scope.isAuthenticated = true;
+                this.$scope.submitLongUrl();
+            });
+        }
+
+        logout() {
+            this.$http.get("/auth/logout")
+                .success(() => this.$scope.isAuthenticated = false);
+        }
+
+        static getMessageFromResponseStatus(response: any) {
+            var message = "Unknown Error";
             if (response.hasOwnProperty("ResponseStatus")) {
                 var responseStatus = <ResponseStatus>response.ResponseStatus;
                 message = responseStatus.Message;
             }
-            this.$scope.errorMessage = message;
-            this.$scope.waiting = false;
-        };
+            return message;
+        }
     }
 
-    angular.module("urlShortenerApp", [])
-        .controller("urlShortenerCtrl", UrlShortenerCtrl);
+    interface ILoginScope extends ng.IScope {
+        userName: string;
+        password: string;
+        errorMessage: string;
+        submitLogin: () => void;
+    }
+
+    class LoginCtrl {
+        static $inject = [
+            "$scope",
+            "$http",
+            "$modalInstance"
+        ];
+        constructor(
+            private $scope: ILoginScope,
+            private $http: ng.IHttpService,
+            private $modalInstance: ModalServiceInstance
+            ) {
+            $scope.submitLogin = () => {
+                this.$scope.errorMessage = null;
+                var authRequest = <Authenticate> {
+                    UserName: $scope.userName,
+                    Password: $scope.password
+                };
+                $http.post("/auth/credentials", authRequest)
+                    .success((response: AuthenticateResponse) => {
+                        $modalInstance.close(response.UserName);
+                    })
+                    .error((response: any) => {
+                        this.$scope.errorMessage = 
+                            UrlShortenerCtrl.getMessageFromResponseStatus(response);
+                    });
+            };
+        }
+    }
+
+
+    angular.module("urlShortenerApp", ['ui.bootstrap'])
+        .controller("urlShortenerCtrl", UrlShortenerCtrl)
+        .controller("loginCtrl", LoginCtrl)
+    ;
 }

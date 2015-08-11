@@ -10,6 +10,7 @@
         <link href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACBAAAeaR9cIAAAAASUVORK5CYII=" rel="icon" type="image/x-icon" />
 
         <!-- Bootstrap -->
+        @*<link href="~/Content/ui-bootstrap-csp.css" rel="stylesheet">*@
         <link href="/Content/bootstrap.min.css" rel="stylesheet">
         <link href="/Content/bootstrap-theme.min.css" rel="stylesheet">
 
@@ -24,13 +25,13 @@
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
         <script src="/scripts/jquery-2.1.4.min.js"></script>
         <!-- Include all compiled plugins (below), or include individual files as needed -->
-        <script src="/scripts/bootstrap.min.js"></script>
-        <script src="/scripts/angular.js"></script>
+        @*<script src="/scripts/bootstrap.min.js"></script>*@
+        <script src="/scripts/angular.min.js"></script>
+        <script src="/scripts/angular-ui/ui-bootstrap.min.js"></script>
+        <script src="/scripts/angular-ui/ui-bootstrap-tpls.min.js"></script>
         <!-- See git log for navigation bar -->
-        <div class="container">
-            <h1>@ViewBag.Title</h1>
-            @RenderBody()
-        </div>
+
+        @RenderBody()
 
         <footer>
             <div class="panel-footer" style="margin-top:20px">
