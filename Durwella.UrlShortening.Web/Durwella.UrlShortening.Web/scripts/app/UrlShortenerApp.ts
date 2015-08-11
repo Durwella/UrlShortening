@@ -50,6 +50,7 @@ module UrlShortenerApp {
             "$scope",
             "$http",
             "$modal",
+            "$attrs",
             "$location"
         ];
 
@@ -59,9 +60,10 @@ module UrlShortenerApp {
             private $scope: IUrlShortenerScope,
             private $http: ng.IHttpService,
             private $modal: ModalService,
+            private $attrs: ng.IAttributes,
             private $location: ng.ILocationService
         ) {
-            $scope.isAuthenticated = false;
+            $scope.isAuthenticated = $attrs["startAuthenticated"] === "True";
             $scope.submitLongUrl = () => {
                 if (!$scope.longUrl)
                     return;
