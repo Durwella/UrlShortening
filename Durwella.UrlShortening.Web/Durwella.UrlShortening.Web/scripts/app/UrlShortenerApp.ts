@@ -104,7 +104,7 @@ module UrlShortenerApp {
 
         showLogin() {
             var modal = this.$modal.open({
-                templateUrl: '_login.html',
+                templateUrl: 'login',
                 controller: 'loginCtrl'
             });
             modal.result.then(() => {

@@ -2,6 +2,7 @@
 @inherits ViewPage
 @{
     var appSettings = System.Configuration.ConfigurationManager.AppSettings;
+    var showAuthButton = appSettings.UseCredentials() || appSettings.UseAad();
     ViewBag.Title = appSettings["Title"];
     var user = Request.GetSession();
     var startAuthenticated = user.IsAuthenticated;
@@ -11,7 +12,7 @@
 <div class="container" ng-app="urlShortenerApp">
     <div ng-controller="urlShortenerCtrl" data-start-authenticated="@startAuthenticated">
 
-        @if (appSettings.UseCredentials())
+        @if (showAuthButton)
         {
         <div class="pull-right">
             <button type="button" class="btn btn-default"

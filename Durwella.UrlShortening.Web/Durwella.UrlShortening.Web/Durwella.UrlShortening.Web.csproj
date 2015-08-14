@@ -148,7 +148,7 @@
     <Content Include="Content\ui-bootstrap-csp.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="_login.html" />
+    <Content Include="login.cshtml" />
     <Content Include="packages.config" />
     <Content Include="default.cshtml" />
     <Content Include="scripts\angular-route.js" />
