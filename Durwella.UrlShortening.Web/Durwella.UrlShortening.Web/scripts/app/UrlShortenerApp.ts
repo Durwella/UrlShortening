@@ -1,6 +1,6 @@
-﻿/// <reference path="../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
-/// <reference path="../typings/servicemodel.d.ts" />
+﻿/// <reference path="../typings/servicemodel.d.ts" />
 /// <reference path="../typings/angularjs/angular.d.ts" />
+/// <reference path="../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
 
 module UrlShortenerApp {
     "use strict";
@@ -15,9 +15,14 @@ module UrlShortenerApp {
     import Authenticate = Durwella.UrlShortening.Web.ServiceModel.Authenticate;
     import AuthenticateResponse = Durwella.UrlShortening.Web.ServiceModel.AuthenticateResponse;
 
-    interface IUrlShortenerScope extends ng.IScope {
+
+    export class UrlShortenerForm {
         longUrl: string;
         customPath: string;
+    }
+
+    interface IUrlShortenerScope extends ng.IScope {
+        form: UrlShortenerForm;
         shortenedUrl: string;
         errorMessage: string;
         waiting: boolean;
@@ -64,13 +69,17 @@ module UrlShortenerApp {
             private $location: ng.ILocationService
         ) {
             $scope.isAuthenticated = $attrs["startAuthenticated"] === "True";
+            $scope.form = new UrlShortenerForm();
+            $scope.form.longUrl = $location.search().longUrl;
             $scope.submitLongUrl = () => {
-                if (!$scope.longUrl)
+                var form = $scope.form;
+                if (!form.longUrl)
                     return;
+                $location.search("longUrl", form.longUrl);
                 $scope.shortenedUrl = null;
                 $scope.errorMessage = null;
                 $scope.waiting = true;
-                var request = <ShortUrlRequest> { Url: $scope.longUrl, CustomPath: $scope.customPath };
+                var request = <ShortUrlRequest> { Url: form.longUrl, CustomPath: form.customPath };
                 $http.post("/shorten", request)
                     .success(this.onSuccess)
                     .error(this.onError);
@@ -104,8 +113,8 @@ module UrlShortenerApp {
 
         showLogin() {
             var modal = this.$modal.open({
-                templateUrl: 'login',
-                controller: 'loginCtrl'
+                templateUrl: "login",
+                controller: "loginCtrl"
             });
             modal.result.then(() => {
                 this.$scope.isAuthenticated = true;

@@ -36,10 +36,10 @@
             <div>
                 <form ng-submit="submitLongUrl()" name="shortenForm">
                     <input class="form-control input-lg"
-                           ng-model="longUrl" id="LongUrl"
+                           ng-model="form.longUrl" id="LongUrl"
                            type="url" placeholder="Paste your long URL">
                     <input class="form-control input-sm"
-                           ng-model="customPath" id="CustomPath"
+                           ng-model="form.customPath" id="CustomPath"
                            type="text" placeholder="Type a custom short path (optional)" style="margin-top: 5px">
                     <input class="btn btn-primary" style="margin-top: 5px"
                            ng-disabled="waiting"

@@ -37,7 +37,12 @@ namespace Durwella.UrlShortening.Web
             SetupAuthentication(container);
 
             // Additional Plugins:
-            Plugins.Add(new RazorFormat());
+            Plugins.Add(new RazorFormat
+            {
+#if DEBUG
+                WatchForModifiedPages = true
+#endif
+            });
             Plugins.Add(new SwaggerFeature());
         }
 
