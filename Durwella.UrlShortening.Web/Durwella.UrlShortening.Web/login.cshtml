@@ -36,7 +36,7 @@
             }
             @if (appSettings.UseAad())
             {
-                <a href="/auth/aad" class="btn btn-info" type="button">Sign in with AAD</a>
+                <button ng-click="useAad()" class="btn btn-info" type="button">Sign in with AAD</button>
             }
             <h4 class="bg-danger" style="padding: 15px" ng-show="errorMessage">{{errorMessage}}</h4>
         </form>

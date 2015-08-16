@@ -1,5 +1,6 @@
 ﻿/// <reference path="../typings/servicemodel.d.ts" />
 /// <reference path="../typings/angularjs/angular.d.ts" />
+/// <reference path="../typings/angularjs/angular-cookies.d.ts" />
 /// <reference path="../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
 
 module UrlShortenerApp {
@@ -14,7 +15,7 @@ module UrlShortenerApp {
     import ModalServiceInstance = angular.ui.bootstrap.IModalServiceInstance;
     import Authenticate = Durwella.UrlShortening.Web.ServiceModel.Authenticate;
     import AuthenticateResponse = Durwella.UrlShortening.Web.ServiceModel.AuthenticateResponse;
-
+    import CookiesService = angular.cookies.ICookiesService;
 
     export class UrlShortenerForm {
         longUrl: string;
@@ -46,6 +47,7 @@ module UrlShortenerApp {
     }
 
     class UrlShortenerCtrl {
+        static longUrlDeferred = "longUrlDeferred";
 
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
@@ -56,7 +58,7 @@ module UrlShortenerApp {
             "$http",
             "$modal",
             "$attrs",
-            "$location"
+            "$cookies"
         ];
 
         // dependencies are injected via AngularJS $injector
@@ -66,16 +68,15 @@ module UrlShortenerApp {
             private $http: ng.IHttpService,
             private $modal: ModalService,
             private $attrs: ng.IAttributes,
-            private $location: ng.ILocationService
+            private $cookies: CookiesService
         ) {
             $scope.isAuthenticated = $attrs["startAuthenticated"] === "True";
             $scope.form = new UrlShortenerForm();
-            $scope.form.longUrl = $location.search().longUrl;
+            $scope.form.longUrl = $cookies.get(UrlShortenerCtrl.longUrlDeferred);
             $scope.submitLongUrl = () => {
                 var form = $scope.form;
                 if (!form.longUrl)
                     return;
-                $location.search("longUrl", form.longUrl);
                 $scope.shortenedUrl = null;
                 $scope.errorMessage = null;
                 $scope.waiting = true;
@@ -92,6 +93,7 @@ module UrlShortenerApp {
             response: ShortUrlResponse, status: number,
             headers: HttpHeadersGetter, config: RequestConfig
         ) => {
+            this.$cookies.remove(UrlShortenerCtrl.longUrlDeferred);
             this.$scope.shortenedUrl = response.Shortened;
             this.$scope.waiting = false;
         }
@@ -114,7 +116,8 @@ module UrlShortenerApp {
         showLogin() {
             var modal = this.$modal.open({
                 templateUrl: "login",
-                controller: "loginCtrl"
+                controller: "loginCtrl",
+                resolve: { longUrl: () => this.$scope.form.longUrl }
             });
             modal.result.then(() => {
                 this.$scope.isAuthenticated = true;
@@ -142,18 +145,23 @@ module UrlShortenerApp {
         password: string;
         errorMessage: string;
         submitLogin: () => void;
+        useAad: () => void;
     }
 
     class LoginCtrl {
         static $inject = [
             "$scope",
             "$http",
-            "$modalInstance"
+            "$modalInstance",
+            "$cookies",
+            "longUrl"
         ];
         constructor(
             private $scope: ILoginScope,
             private $http: ng.IHttpService,
-            private $modalInstance: ModalServiceInstance
+            private $modalInstance: ModalServiceInstance,
+            private $cookies: CookiesService,
+            private longUrl: string
             ) {
             $scope.submitLogin = () => {
                 this.$scope.errorMessage = null;
@@ -170,11 +178,15 @@ module UrlShortenerApp {
                             UrlShortenerCtrl.getMessageFromResponseStatus(response);
                     });
             };
+            $scope.useAad = () => {
+                $cookies.put(UrlShortenerCtrl.longUrlDeferred, longUrl);
+                document.location.href = "/auth/aad";
+            }
         }
     }
 
 
-    angular.module("urlShortenerApp", ['ui.bootstrap'])
+    angular.module("urlShortenerApp", ["ngCookies", "ui.bootstrap"])
         .controller("urlShortenerCtrl", UrlShortenerCtrl)
         .controller("loginCtrl", LoginCtrl)
     ;
