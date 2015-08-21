@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using Durwella.UrlShortening.Web.ServiceInterface;
 using Funq;
 using ServiceStack;
@@ -53,6 +54,17 @@ namespace Durwella.UrlShortening.Web
             container.Register(aliasRepository);
             container.Register<IProtectedPathList>(this);
             SetupPreferredHashLength(container);
+            var ignoreErrorCodesString = ConfigurationManager.AppSettings["IgnoreErrorCodes"];
+            if (!ignoreErrorCodesString.IsNullOrEmpty())
+            {
+                var ignoreErrorCodes = ignoreErrorCodesString.Split(',', ' ')
+                    .Select(s => (HttpStatusCode) Convert.ToInt32(s)).ToList();
+                var urlUnwrapper = new WebClientUrlUnwrapper
+                {
+                    IgnoreErrorCodes = ignoreErrorCodes
+                };
+                container.Register<IUrlUnwrapper>(urlUnwrapper);
+            }
         }
 
         private static IAliasRepository SetupAzureStorageAliasRepository()
