@@ -3,6 +3,7 @@
 @{
     Layout = ""; // http://stackoverflow.com/questions/25220061/servicestack-razor-setting-layout-to-null
     var appSettings = System.Configuration.ConfigurationManager.AppSettings;
+    var aadAutoFocus = appSettings.UseAad() && !appSettings.UseCredentials() ? "autofocus" : "";
 }
 
 <!-- Seems that Angular UI Bootstrap doesn't support the outer divs -->
@@ -36,7 +37,12 @@
             }
             @if (appSettings.UseAad())
             {
-                <button ng-click="useAad()" class="btn btn-info" type="button">Sign in with AAD</button>
+                <button 
+                        ng-click="useAad()" 
+                        class="btn btn-info" 
+                        type="button"
+                        @(aadAutoFocus)
+                        >Sign in with AAD</button>
             }
             <h4 class="bg-danger" style="padding: 15px" ng-show="errorMessage">{{errorMessage}}</h4>
         </form>
