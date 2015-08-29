@@ -47,7 +47,7 @@ module UrlShortenerApp {
     }
 
     class UrlShortenerCtrl {
-        static longUrlDeferred = "longUrlDeferred";
+        static formDeferred = "formDeferred";
 
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
@@ -71,8 +71,7 @@ module UrlShortenerApp {
             private $cookies: CookiesService
         ) {
             $scope.isAuthenticated = $attrs["startAuthenticated"] === "True";
-            $scope.form = new UrlShortenerForm();
-            $scope.form.longUrl = $cookies.get(UrlShortenerCtrl.longUrlDeferred);
+            $scope.form = $cookies.getObject(UrlShortenerCtrl.formDeferred) || new UrlShortenerForm();
             $scope.submitLongUrl = () => {
                 var form = $scope.form;
                 if (!form.longUrl)
@@ -83,7 +82,11 @@ module UrlShortenerApp {
                 var request = <ShortUrlRequest> { Url: form.longUrl, CustomPath: form.customPath };
                 $http.post("/shorten", request)
                     .success(this.onSuccess)
-                    .error(this.onError);
+                    .error(this.onError)
+                    .finally(() => {
+                        this.$cookies.remove(UrlShortenerCtrl.formDeferred);
+                        this.$scope.waiting = false;
+                    });
             };
             $scope.showLogin = () => this.showLogin();
             $scope.logout = () => this.logout();
@@ -93,9 +96,7 @@ module UrlShortenerApp {
             response: ShortUrlResponse, status: number,
             headers: HttpHeadersGetter, config: RequestConfig
         ) => {
-            this.$cookies.remove(UrlShortenerCtrl.longUrlDeferred);
             this.$scope.shortenedUrl = response.Shortened;
-            this.$scope.waiting = false;
         }
 
         onError: HttpPromiseCallback<any> = (
@@ -110,14 +111,13 @@ module UrlShortenerApp {
             else
                 this.$scope.errorMessage =
                     UrlShortenerCtrl.getMessageFromResponseStatus(response);
-            this.$scope.waiting = false;
         };
 
         showLogin() {
             var modal = this.$modal.open({
                 templateUrl: "login",
                 controller: "loginCtrl",
-                resolve: { longUrl: () => this.$scope.form.longUrl }
+                resolve: { form: () => this.$scope.form }
             });
             modal.result.then(() => {
                 this.$scope.isAuthenticated = true;
@@ -154,14 +154,14 @@ module UrlShortenerApp {
             "$http",
             "$modalInstance",
             "$cookies",
-            "longUrl"
+            "form"
         ];
         constructor(
             private $scope: ILoginScope,
             private $http: ng.IHttpService,
             private $modalInstance: ModalServiceInstance,
             private $cookies: CookiesService,
-            private longUrl: string
+            private form: UrlShortenerForm
             ) {
             $scope.submitLogin = () => {
                 this.$scope.errorMessage = null;
@@ -179,7 +179,7 @@ module UrlShortenerApp {
                     });
             };
             $scope.useAad = () => {
-                $cookies.put(UrlShortenerCtrl.longUrlDeferred, longUrl);
+                $cookies.putObject(UrlShortenerCtrl.formDeferred, form);
                 document.location.href = "/auth/aad";
             }
         }
