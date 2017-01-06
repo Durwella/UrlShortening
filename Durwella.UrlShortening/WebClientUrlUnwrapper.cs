@@ -13,8 +13,12 @@ namespace Durwella.UrlShortening
         /// </summary>
         public IList<HttpStatusCode> IgnoreErrorCodes { get; set; }
 
+        public static bool ResolveUrls { get; set; }
+
         public string GetDirectUrl(string url)
         {
+            if (!ResolveUrls) return url;
+
             var request = WebRequest.Create(url);
             try
             {

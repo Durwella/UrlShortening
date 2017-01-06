@@ -4,6 +4,7 @@
     var appSettings = System.Configuration.ConfigurationManager.AppSettings;
     var showAuthButton = appSettings.UseCredentials() || appSettings.UseAad();
     ViewBag.Title = appSettings["Title"];
+    ViewBag.LogoUrl = appSettings["LogoUrl"];
     var user = Request.GetSession();
     var startAuthenticated = user.IsAuthenticated;
 }
@@ -30,7 +31,7 @@
         </div>
         }
 
-        <h1>@ViewBag.Title</h1>
+        <h1>@if (ViewBag.LogoUrl != ""){<img src="@ViewBag.LogoUrl" />}@ViewBag.Title</h1>
 
         <div>
             <div>

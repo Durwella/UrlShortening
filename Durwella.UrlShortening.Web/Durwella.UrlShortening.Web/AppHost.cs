@@ -65,6 +65,8 @@ namespace Durwella.UrlShortening.Web
                 };
                 container.Register<IUrlUnwrapper>(urlUnwrapper);
             }
+
+            WebClientUrlUnwrapper.ResolveUrls = ConfigurationManager.AppSettings["ResolveUrls"].ToLower() == "true";
         }
 
         private static IAliasRepository SetupAzureStorageAliasRepository()
