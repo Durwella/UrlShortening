@@ -11,10 +11,13 @@ namespace Durwella.UrlShortening.Tests
         {
             var wrappedUrl = "http://goo.gl/mSkqOi";
             var subject = new WebClientUrlUnwrapper();
+            WebClientUrlUnwrapper.ResolveUrls = true;
 
             var directUrl = subject.GetDirectUrl(wrappedUrl);
 
             directUrl.Should().Be("http://example.com/");
+
+            WebClientUrlUnwrapper.ResolveUrls = false;
         }
 
         [Test]
@@ -25,10 +28,13 @@ namespace Durwella.UrlShortening.Tests
             {
                 IgnoreErrorCodes = new[] { HttpStatusCode.NotFound }
             };
+            WebClientUrlUnwrapper.ResolveUrls = true;
 
             var directUrl = subject.GetDirectUrl(givenUrl);
 
             directUrl.Should().Be(givenUrl);
+
+            WebClientUrlUnwrapper.ResolveUrls = false;
         }
     }
 }
